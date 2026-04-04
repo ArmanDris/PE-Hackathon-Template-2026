@@ -28,7 +28,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          echo "IMAGE DIGEST: $IMAGE_DIGEST"
+
+          echo "KNOWN_HOSTS: $KNOWN_HOSTS"
 
           echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           ssh -i ~/.ssh/deploy_key ubuntu@54.241.201.248 "bash -s" << 'EOF'
