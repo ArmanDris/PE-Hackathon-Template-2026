@@ -180,3 +180,134 @@ def test_create_negative_path(client, user):
     }
     response = client.post("/urls", json=payload)
     assert response.status_code != 201
+
+
+def test_get_url_by_id_positive_path(client):
+    urls = [
+        {
+            "user_id": 1,
+            "short_code": "abc123",
+            "original_url": "https://fun.co",
+            "title": "A Link",
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        },
+        {
+            "user_id": 2,
+            "short_code": "def456",
+            "original_url": "https://fun.co",
+            "title": "A Link",
+            "is_active": False,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        },
+    ]
+    ids = []
+    for url in urls:
+        new_url = Urls.create(**url)
+        ids.append(new_url.id)
+
+    response = client.get(f"/urls/{ids[1]}")
+
+    assert response.status_code == 200
+    assert response.json is not None
+    res = response.json
+
+    for key in res:
+        # Don't worry about id
+        if key == "id":
+            continue
+
+        if isinstance(urls[1][key], datetime):
+            assert res[key] == datetime.isoformat(urls[1][key])
+        else:
+            assert res[key] == urls[1][key]
+
+
+def test_get_url_by_id_negative_path(client):
+    urls = [
+        {
+            "user_id": 1,
+            "short_code": "abc123",
+            "original_url": "https://fun.co",
+            "title": "A Link",
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        },
+        {
+            "user_id": 2,
+            "short_code": "def456",
+            "original_url": "https://fun.co",
+            "title": "A Link",
+            "is_active": False,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        },
+    ]
+    ids = []
+    for url in urls:
+        new_url = Urls.create(**url)
+        ids.append(new_url.id)
+
+    response = client.get("/urls/1234")
+
+    assert response.status_code == 400
+
+
+def test_update_url_positive_path(client):
+    now = datetime.now(timezone.utc)
+    url = Urls.create(
+        user_id=1,
+        short_code="abc123",
+        original_url="https://fun.co",
+        title="A Link",
+        is_active=True,
+        created_at=now,
+        updated_at=now,
+    )
+
+    payload = {
+        "original_url": "https://example.com",
+        "title": "Updated Title",
+        "is_active": False,
+    }
+    response = client.put(f"/urls/{url.id}", json=payload)
+
+    assert response.status_code == 200
+    assert response.json is not None
+    data = response.json
+
+    assert data["id"] == url.id
+    assert data["original_url"] == "https://example.com"
+    assert data["title"] == "Updated Title"
+    assert data["is_active"] is False
+
+    updated_url = Urls.get_or_none(Urls.id == url.id)
+    assert updated_url is not None
+    assert updated_url.original_url == "https://example.com"
+    assert updated_url.title == "Updated Title"
+    assert updated_url.is_active is False
+
+
+def test_update_url_negative_path(client):
+    now = datetime.now(timezone.utc)
+    url = Urls.create(
+        user_id=1,
+        short_code="abc123",
+        original_url="https://fun.co",
+        title="A Link",
+        is_active=True,
+        created_at=now,
+        updated_at=now,
+    )
+
+    # id does not exist
+    payload = {"title": "Updated Title"}
+    response = client.put("/urls/1234", json=payload)
+    assert response.status_code == 400
+
+    # No payload
+    response = client.put("/urls/1234")
+    assert response.status_code == 400

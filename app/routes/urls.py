@@ -229,3 +229,53 @@ def create_url():
     except Exception as e:
         # This should only happen if there's something wrong with the db
         return jsonify({"error": f"Internal Error: {e}"}), 500
+
+
+@urls_bp.get("/urls/<int:id>")
+def get_url_by_id(id: int):
+    url = Urls.get_or_none(Urls.id == id)
+
+    if url is None:
+        return (
+            jsonify({"error": f"Error: url with id {id} does not exist"}),
+            400,
+        )
+
+    return jsonify(urls_model_to_dict(url)), 200
+
+
+@urls_bp.put("/urls/<int:id>")
+def update_url(id):
+    url = Urls.get_or_none(Urls.id == id)
+
+    if url is None:
+        return (
+            jsonify({"error": f"Error: url with id {id} does not exist"}),
+            400,
+        )
+
+    data = request.json
+    if data is None:
+        return (
+            jsonify({"error": f"Error: json payload is required"}),
+            400,
+        )
+
+    original_url = data.get("original_url", None)
+    if original_url is not None:
+        url.original_url = original_url
+
+    title = data.get("title", None)
+    if title is not None:
+        url.title = title
+
+    is_active = data.get("is_active", None)
+    if is_active is not None:
+        url.is_active = is_active
+
+    try:
+        url.save()
+    except Exception as e:
+        return jsonify({"error": f"Internal Error: Failed to update url: {e}"}), 500
+
+    return jsonify(urls_model_to_dict(url)), 200
