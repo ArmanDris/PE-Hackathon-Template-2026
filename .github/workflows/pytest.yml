@@ -16,6 +16,7 @@ jobs:
       - run: uv run pytest -v --cov=app --cov-report=term-missing --cov-fail-under=70
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: server_ssh
     needs: integrate
