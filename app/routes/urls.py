@@ -4,7 +4,7 @@ import secrets
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, abort, jsonify, redirect, request
 from playhouse.shortcuts import model_to_dict
 
 from app.models.urls import Urls
@@ -297,3 +297,20 @@ def delete_url_by_id(id: int):
         return jsonify({"error": f"Internal Error: Failed to delete url: {e}"}), 500
 
     return jsonify(urls_model_to_dict(url)), 200
+
+
+@urls_bp.route("/urls/<shortcode>/redirect")
+def redirect_url(shortcode):
+    if len(shortcode) != 6:
+        abort(404)
+
+    # TODO: Maybe add sorting on short_code field?
+    url = Urls.get_or_none(Urls.short_code == shortcode)
+
+    if url is None:
+        abort(404)
+
+    if not url.is_active:
+        abort(404)
+
+    return redirect(url.original_url), 302
