@@ -268,9 +268,12 @@ def test_update_url_positive_path(client):
         updated_at=now,
     )
 
-    response = client.put(
-        f"/urls/{url.id}?original_url=https://example.com&title=Updated+Title&is_active=false"
-    )
+    payload = {
+        "original_url": "https://example.com",
+        "title": "Updated Title",
+        "is_active": False,
+    }
+    response = client.put(f"/urls/{url.id}", json=payload)
 
     assert response.status_code == 200
     assert response.json is not None
@@ -301,9 +304,10 @@ def test_update_url_negative_path(client):
     )
 
     # id does not exist
-    response = client.put("/urls/1234?title=Updated+Title")
+    payload = {"title": "Updated Title"}
+    response = client.put("/urls/1234", json=payload)
     assert response.status_code == 400
 
-    # invalid is_active value
-    response = client.put(f"/urls/{url.id}?is_active=maybe")
+    # No payload
+    response = client.put("/urls/1234")
     assert response.status_code == 400

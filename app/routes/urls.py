@@ -254,28 +254,24 @@ def update_url(id):
             400,
         )
 
-    original_url = request.args.get("original_url", None)
+    data = request.json
+    if data is None:
+        return (
+            jsonify({"error": f"Error: json payload is required"}),
+            400,
+        )
+
+    original_url = data.get("original_url", None)
     if original_url is not None:
         url.original_url = original_url
 
-    title = request.args.get("title", None)
+    title = data.get("title", None)
     if title is not None:
         url.title = title
 
-    is_active = request.args.get("is_active", None)
+    is_active = data.get("is_active", None)
     if is_active is not None:
-        true_values = {"true", "1", "yes", "y", "on"}
-        false_values = {"false", "0", "no", "n", "off"}
-        normalized = is_active.strip().lower()
-
-        if normalized in true_values:
-            parsed_is_active = True
-        elif normalized in false_values:
-            parsed_is_active = False
-        else:
-            return jsonify({"error": f"Invalid is_active: {is_active}"}), 400
-
-        url.is_active = parsed_is_active
+        url.is_active = is_active
 
     try:
         url.save()
