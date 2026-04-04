@@ -3,6 +3,7 @@ from flask import Flask, jsonify
 
 from app.database import init_db
 from app.routes import register_routes
+from app.models import product
 
 
 def create_app():
