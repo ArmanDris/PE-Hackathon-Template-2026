@@ -2,7 +2,7 @@ import csv
 
 from peewee import chunked
 
-from app.database import db
+from app.database import db, init_db
 from app.models.events import Events
 from app.models.urls import Urls
 from app.models.users import Users
@@ -38,6 +38,12 @@ def load_csv_users(filepath):
             Users.insert_many(batch).execute()
 
 
-load_csv_users("app/assets/events.csv")
-load_csv_urls("app/assets/urls.csv")
+init_db(None)
+
+db.create_tables([Events, Urls, Users])
+
 load_csv_users("app/assets/users.csv")
+load_csv_urls("app/assets/urls.csv")
+load_csv_events("app/assets/events.csv")
+
+db.close()

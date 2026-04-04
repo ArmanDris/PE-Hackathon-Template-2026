@@ -10,7 +10,7 @@ class BaseModel(Model):
         database = db
 
 
-def init_db(app):
+def init_db(app=None):
     database = PostgresqlDatabase(
         os.environ.get("DATABASE_NAME", "hackathon_db"),
         host=os.environ.get("DATABASE_HOST", "localhost"),
@@ -20,11 +20,13 @@ def init_db(app):
     )
     db.initialize(database)
 
-    @app.before_request
-    def _db_connect():
-        db.connect(reuse_if_open=True)
+    if app:
 
-    @app.teardown_appcontext
-    def _db_close(exc):
-        if not db.is_closed():
-            db.close()
+        @app.before_request
+        def _db_connect():
+            db.connect(reuse_if_open=True)
+
+        @app.teardown_appcontext
+        def _db_close(exc):
+            if not db.is_closed():
+                db.close()
