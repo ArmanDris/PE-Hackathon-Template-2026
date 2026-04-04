@@ -311,3 +311,68 @@ def test_update_url_negative_path(client):
     # No payload
     response = client.put("/urls/1234")
     assert response.status_code == 400
+
+
+def test_delete_url_by_id_positive_path(client):
+    urls = [
+        {
+            "user_id": 1,
+            "short_code": "abc123",
+            "original_url": "https://fun.co",
+            "title": "A Link",
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        },
+        {
+            "user_id": 2,
+            "short_code": "def456",
+            "original_url": "https://fun.co",
+            "title": "A Link",
+            "is_active": False,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        },
+    ]
+    ids = []
+    for url in urls:
+        new_url = Urls.create(**url)
+        ids.append(new_url.id)
+
+    response = client.delete(f"/urls/{ids[1]}")
+
+    assert response.status_code == 200
+
+    url = Urls.get_or_none(id=ids[1])
+    assert url is None
+
+
+def test_delete_url_by_id_negative_path(client):
+    urls = [
+        {
+            "user_id": 1,
+            "short_code": "abc123",
+            "original_url": "https://fun.co",
+            "title": "A Link",
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        },
+        {
+            "user_id": 2,
+            "short_code": "def456",
+            "original_url": "https://fun.co",
+            "title": "A Link",
+            "is_active": False,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        },
+    ]
+    ids = []
+    for url in urls:
+        new_url = Urls.create(**url)
+        ids.append(new_url.id)
+
+    response = client.delete("/urls/1234")
+
+    assert response.status_code == 400
