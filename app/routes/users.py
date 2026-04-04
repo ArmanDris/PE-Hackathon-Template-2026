@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, request
-from app.database import db
 from app.models.users import Users
 from typing import Dict
 from datetime import datetime
@@ -19,12 +18,22 @@ def users_bulk():
     file_storage = next(iter(request.files.values()))
     if not file_storage.filename:
         return jsonify({"error": "No selected file"}), 400
+    Users.delete().execute()
+
     count = 0
     try:
         text_stream = io.TextIOWrapper(file_storage.stream, encoding='utf-8', newline='')
         reader = csv.DictReader(text_stream)
         for row in reader:
-            print(row)
+            if not validate_user(row):
+                raise Exception(f"{row} is not a valid user object")
+            user_data = {
+                "id": int(row.get("id")),
+                "username": row.get("username"),
+                "email": row.get("email"),
+                "created_at": datetime.fromisoformat(row.get("created_at"))
+            }
+            Users.create(**user_data)
             count += 1
     except Exception as e:
         return jsonify({"error": f"Failed to parse CSV: {e}"}), 400
@@ -37,6 +46,7 @@ def validate_user(user: Dict) -> bool:
     Required: username and email are non-empty strings;
     created_at is a datetime or an ISO-format datetime string.
     """
+
     # Check presence and type of username
     username = user.get("username")
     if not isinstance(username, str) or not username.strip():
