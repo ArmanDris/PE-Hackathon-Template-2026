@@ -3,20 +3,35 @@ import json
 from datetime import datetime
 
 from flask import Blueprint, Response, jsonify, request
-from playhouse.shortcuts import model_to_dict
 
 from app.models.events import Events
 
 events_bp = Blueprint("events", __name__)
 
-QUERY_FIELDS = {
-    "id": Events.id,
+EVENT_FIELDS = {
+    "id": {"field": Events.id, "type": int},
+    "url_id": {"field": Events.url_id, "type": int},
+    "user_id": {"field": Events.user_id, "type": int},
+    "event_type": {"field": Events.event_type, "type": str},
+    "timestamp": {"field": Events.timestamp, "type": "datetime"},
+    "details": {"field": Events.details, "type": "json"},
+}
+
+CREATE_FIELDS = {
     "url_id": Events.url_id,
     "user_id": Events.user_id,
     "event_type": Events.event_type,
-    "timestamp": Events.timestamp,
     "details": Events.details
 }
+
+# This perserves the order of each item, jsonify might be able to do this
+# I just dont know how :()
+def better_jsonify(jval, mimetype="application/json", status=200, indent=2):
+    return Response(
+                json.dumps(jval, indent=indent, default=str),
+                mimetype=mimetype,
+                status=status
+            )
 
 # This helper is designed the handle all the misformatting that
 # might be done while trying to parse certain values from the
@@ -24,6 +39,7 @@ QUERY_FIELDS = {
 # Keys processed:
 # "details", "timestamp"
 def prepare_values(event_val):
+    
     # details is a string, so it needs to be prased into a json
     if event_val.get("details"):
         try:
@@ -44,8 +60,9 @@ def prepare_values(event_val):
 def build_search_list(query_json):
     filters = []
     for key, value, in query_json.items():
-        field = QUERY_FIELDS.get(key)
-        if not field or value is None:
+        config = EVENT_FIELDS.get(key)
+        field = config["field"]
+        if not config or value is None:
             continue
         #temp fix for details
         if key == "details":
@@ -60,41 +77,82 @@ def build_search_list(query_json):
 
 # Will filter the Events based on query param, if none are provided it will return the whole list
 def get_events_filtered(query_param):
-    try :
-        filters = build_search_list(query_param)
-    except Exception as e:
-        return jsonify({"error": f"Filter build error"}), 500
-        
+    filters = build_search_list(query_param)
+         
     query = Events.select()
 
-    try :
-        if filters:
-            query = query.where(*filters)
-    except:
-        return jsonify({"error": "There was a problem while filtering the events"}), 500
+    # applies the fitler to query
+    if filters:
+        query = query.where(*filters)
 
+    # gets the json value from selected query
     query = query.dicts()
 
     cleaned_result = [prepare_values(r) for r in query]
     return cleaned_result
 
 
+#--------------------------------------------------------------------
+#-------------------------POST SANITIZATION-------------------------
+#--------------------------------------------------------------------
+def validate_post_format(key, value):
+    
+    if EVENT_FIELDS[key]["type"] == int:
+        try:
+            return int(value)
+        except ValueError:
+            return None
+
+        
+    elif EVENT_FIELDS[key]["type"] == str:
+        return value
+
+        
+    elif EVENT_FIELDS[key]["type"] == "datetime":
+        try:
+            return datetime.fromisoformat(value)
+        except ValueError:
+            return None
+
+        
+    elif EVENT_FIELDS[key]["type"] == "json":
+        try:
+            return json.dumps(value)
+        except ValueError:
+            return None
+        
+    return None
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+        
 @events_bp.route("/events", methods=['GET', 'POST'])
 def list_events():
     if request.method == 'GET':
-
         query = request.args.to_dict()
         try:
             filtered_response = get_events_filtered(query)
 
-            return Response(
-                json.dumps(filtered_response, indent=2, default=str),
-                mimetype="application/json"
-            )
+            return better_jsonify(filtered_response)
         except Exception as e:
-            # Inspired changes, apparently this can happen if there is something wrong with the db
             return jsonify({"error": f"Internal Error: {e}"}), 500
 
+    # Should only be for creating an event
     if request.method == 'POST':
-        return jsonify({"error:": "Be kind to all"}), 418
-    return 1
+        
+        event_json = request.get_json()
+
+        create_event = {}
+        for key in CREATE_FIELDS.keys():
+            # Checks if post data is missing any 
+            if key not in event_json.keys():
+                return jsonify({"error": f"Error: {key} is required when creating an event"}), 400
+            else:
+                safe_val = validate_post_format(key, event_json[key]) # -----POST SANITIZATION--------
+                if safe_val is None:
+                    return jsonify({"error": f"Error: {key} must be of type {EVENT_FIELDS[key]["type"]}"})
+                create_event[key] = safe_val
+
+        return better_jsonify(create_event, status=201)
+
+    return jsonify({""}), 500 # fallback not sure if this is needed
