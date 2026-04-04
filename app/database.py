@@ -11,13 +11,25 @@ class BaseModel(Model):
 
 
 def init_db(app=None):
-    database = PostgresqlDatabase(
-        os.environ.get("DATABASE_NAME", "hackathon_db"),
-        host=os.environ.get("DATABASE_HOST", "localhost"),
-        port=int(os.environ.get("DATABASE_PORT", 5432)),
-        user=os.environ.get("DATABASE_USER", "postgres"),
-        password=os.environ.get("DATABASE_PASSWORD", "postgres"),
-    )
+    database_url = os.environ.get("DATABASE_URL")
+    # For integration testing, we use an isolated, ephemeral sqlite database
+    if database_url and database_url.startswith("sqlite://"):
+        from peewee import SqliteDatabase
+        # strip the prefix
+        prefix = "sqlite:///"
+        if database_url.startswith(prefix):
+            path = database_url[len(prefix):]
+        else:
+            path = database_url[len("sqlite://"):]
+        database = SqliteDatabase(path or ":memory:")
+    else:
+        database = PostgresqlDatabase(
+            os.environ.get("DATABASE_NAME", "hackathon_db"),
+            host=os.environ.get("DATABASE_HOST", "localhost"),
+            port=int(os.environ.get("DATABASE_PORT", 5432)),
+            user=os.environ.get("DATABASE_USER", "postgres"),
+            password=os.environ.get("DATABASE_PASSWORD", "postgres"),
+        )
     db.initialize(database)
 
     if app:
