@@ -5,7 +5,6 @@ from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 from flask import Blueprint, abort, jsonify, redirect, request
-from playhouse.shortcuts import model_to_dict
 
 from app.models.urls import Urls
 from app.models.users import Users
@@ -57,13 +56,16 @@ def is_valid_http_url(url: str) -> bool:
 
 
 def urls_model_to_dict(u):
-    output = model_to_dict(u)
-
-    # Model to dict does not format dates properly
-    output["created_at"] = datetime.isoformat(u.created_at)
-    output["updated_at"] = datetime.isoformat(u.updated_at)
-
-    return output
+    return {
+        "id": u.id,
+        "user_id": u.user_id,
+        "short_code": u.short_code,
+        "original_url": u.original_url,
+        "title": u.title,
+        "is_active": u.is_active,
+        "created_at": datetime.isoformat(u.created_at),
+        "updated_at": datetime.isoformat(u.updated_at),
+    }
 
 
 @urls_bp.get("/urls")

@@ -36,3 +36,4 @@ judging/
 .coverage
 
 docker-compose.override.yml
+profiler/
