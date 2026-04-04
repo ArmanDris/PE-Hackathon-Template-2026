@@ -3,15 +3,15 @@ from peewee import SqliteDatabase
 
 from app import create_app
 from app.database import db
-from app.models.users import Users
 from app.models.urls import Urls
+from app.models.users import Users
 
 TEST_MODELS = [Users, Urls]
 
 
 @pytest.fixture()
 def app():
-    app = create_app()
+    app = create_app(is_pytest=True)
     app.config.update(TESTING=True)
 
     # Replace Postgres with in-memory SQLite for tests
@@ -22,6 +22,10 @@ def app():
     test_db.bind(TEST_MODELS, bind_refs=False, bind_backrefs=False)
     test_db.connect()
     test_db.create_tables(TEST_MODELS)
+
+    # Remove the teardown_appcontext handler that closes the DB during tests
+    # (closing in-memory SQLite destroys the database)
+    app.teardown_appcontext_funcs = []
 
     yield app
 
@@ -37,3 +41,11 @@ def client(app):
 @pytest.fixture()
 def runner(app):
     return app.test_cli_runner()
+
+
+@pytest.fixture()
+def user(app):
+    user = Users.create(
+        username="Test", email="test@example.com", created_at="2026-04-04T16:55:31.744Z"
+    )
+    return user
