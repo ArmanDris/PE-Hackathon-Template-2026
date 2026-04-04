@@ -376,3 +376,55 @@ def test_delete_url_by_id_negative_path(client):
     response = client.delete("/urls/1234")
 
     assert response.status_code == 400
+
+
+def test_redirect_url_positive_path(client):
+    now = datetime.now(timezone.utc)
+    url = Urls.create(
+        user_id=1,
+        short_code="abc123",
+        original_url="https://fun.co",
+        title="A Link",
+        is_active=True,
+        created_at=now,
+        updated_at=now,
+    )
+
+    response = client.get(f"/urls/{url.short_code}/redirect")
+
+    assert response.status_code == 302
+    assert response.location == url.original_url
+
+
+def test_redirect_url_negative_path(client):
+    now = datetime.now(timezone.utc)
+    Urls.create(
+        user_id=1,
+        short_code="abc123",
+        original_url="https://fun.co",
+        title="A Link",
+        is_active=True,
+        created_at=now,
+        updated_at=now,
+    )
+    Urls.create(
+        user_id=2,
+        short_code="def456",
+        original_url="https://fun.co",
+        title="A Link",
+        is_active=False,
+        created_at=now,
+        updated_at=now,
+    )
+
+    # shortcode does not exist
+    response = client.get("/urls/zzzzzz/redirect")
+    assert response.status_code == 404
+
+    # shortcode has wrong length
+    response = client.get("/urls/abc1234/redirect")
+    assert response.status_code == 404
+
+    # shortcode exists but is inactive
+    response = client.get("/urls/def456/redirect")
+    assert response.status_code == 404
