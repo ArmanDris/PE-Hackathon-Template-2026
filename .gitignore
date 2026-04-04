@@ -34,3 +34,5 @@ Thumbs.db
 judging/
 
 .coverage
+
+docker-compose.override.yml
