@@ -1,6 +1,9 @@
 name: Deploy YeOldLinkShortner
+
 on:
-  push:
+  workflow_run:
+    workflows: ["Pytest"]
+    types: [completed]
     branches:
       - main
       - arm-dev
@@ -8,7 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: abv
     environment: server_ssh
     steps:
       - name: Deploy to server
