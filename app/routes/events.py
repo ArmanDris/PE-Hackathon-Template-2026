@@ -8,12 +8,10 @@ events_bp = Blueprint("events", __name__)
 
 @events_bp.route("/events")
 def list_events():
-    print(Events._meta.sorted_fields)
     events = Events.select().dicts()
 
     json_list = []
     for x in events:
-        #conv_dict = model_to_dict(x)
         conv_dict = x
         if conv_dict.get("details"):
             conv_dict["details"] = json.loads(conv_dict["details"])
