@@ -56,6 +56,30 @@ curl http://localhost:5000/health
 # → {"status":"ok"}
 ```
 
+## Run With Docker Compose
+
+```bash
+# 1. Create env file (if you do not already have one)
+cp .env.example .env
+
+# 2. Build and start Flask + Postgres
+docker compose up --build
+
+# 3. Verify
+curl http://localhost:5000/health
+# → {"status":"ok"}
+```
+
+Useful commands:
+
+```bash
+# Stop services
+docker compose down
+
+# Stop services and remove Postgres data volume
+docker compose down -v
+```
+
 ## Project Structure
 
 ```
