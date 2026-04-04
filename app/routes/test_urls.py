@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 import pytest
 
 from app.models.urls import Urls
+from app.models.users import Users
 
 
 def test_list_all(client):
@@ -122,3 +123,60 @@ def test_list_filter_bad(client):
     response = client.get("/urls?user_id=tom")
 
     assert response.status_code == 400
+
+
+def test_create_positive_path(client, user):
+    payload = {
+        "user_id": user.id,
+        "original_url": "https://fun.co",
+        "title": "A Link",
+    }
+
+    response = client.post("/urls", json=payload)
+    assert response.status_code == 201
+    assert response.json is not None
+    data = response.json
+
+    assert data["user_id"] == payload["user_id"]
+    assert data["original_url"] == payload["original_url"]
+    assert data["title"] == payload["title"]
+    assert len(data["short_code"]) == 6
+
+    url = Urls.get_or_none(Urls.short_code == data["short_code"])
+    assert url is not None
+
+    assert url.user_id == payload["user_id"]
+    assert url.original_url == payload["original_url"]
+    assert url.title == payload["title"]
+
+
+def test_create_negative_path(client, user):
+    # no json data
+    response = client.post("/urls")
+    assert response.status_code != 201
+
+    # user_id that doesn't exist
+    payload = {
+        "user_id": 99999,
+        "original_url": "https://fun.co",
+        "title": "A Link",
+    }
+    response = client.post("/urls", json=payload)
+    assert response.status_code != 201
+
+    # invalid url
+    payload = {
+        "user_id": user.id,
+        "original_url": "not-a-valid-url",
+        "title": "A Link",
+    }
+    response = client.post("/urls", json=payload)
+    assert response.status_code != 201
+
+    # no title
+    payload = {
+        "user_id": user.id,
+        "original_url": "https://fun.co",
+    }
+    response = client.post("/urls", json=payload)
+    assert response.status_code != 201
