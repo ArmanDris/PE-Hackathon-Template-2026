@@ -65,7 +65,7 @@ curl http://localhost:5000/health
 # 1. Create env file (if you do not already have one)
 cp .env.example .env
 
-# 2. Build and start Flask + Postgres
+# 2. Build and start Flask + PgBouncer + Postgres
 docker compose up --build
 
 # 3. Verify

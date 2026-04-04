@@ -1,0 +1,10 @@
+services:
+  web:
+    ports:
+      - 5000:5000
+      - 8089:8089 # For locust
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    command: uv run python run.py
