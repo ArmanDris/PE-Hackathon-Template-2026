@@ -36,7 +36,7 @@ jobs:
           set -euo pipefail
           echo "Deploying YeOldLinkShortner"
 
-          cd pe-hackathon-root
+          cd pe-hackathon-root/PE-Hackathon-Template-2026
 
           git pull
 
