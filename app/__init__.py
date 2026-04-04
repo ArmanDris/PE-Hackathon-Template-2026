@@ -1,3 +1,5 @@
+import os
+
 from dotenv import load_dotenv
 from flask import Flask, jsonify
 
@@ -15,6 +17,16 @@ def create_app(is_pytest=False):
     app = Flask(__name__)
 
     init_db(app)
+
+    if os.environ.get("DEBUG_PROFILE", "false") == "true":
+        from werkzeug.middleware.profiler import ProfilerMiddleware
+
+        app.wsgi_app = ProfilerMiddleware(
+            app.wsgi_app,
+            restrictions=[30],
+            profile_dir="/app/profiler",
+            filename_format="{method}-{path}-{time:.0f}-{elapsed:.0f}ms.prof",
+        )
 
     from app import models  # noqa: F401 - registers models with Peewee
 
