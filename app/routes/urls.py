@@ -229,3 +229,16 @@ def create_url():
     except Exception as e:
         # This should only happen if there's something wrong with the db
         return jsonify({"error": f"Internal Error: {e}"}), 500
+
+
+@urls_bp.get("/urls/<int:id>")
+def get_url_by_id(id: int):
+    url = Urls.get_or_none(Urls.id == id)
+
+    if url is None:
+        return (
+            jsonify({"error": f"Error: url with id {id} does not exist"}),
+            400,
+        )
+
+    return jsonify(urls_model_to_dict(url)), 200
