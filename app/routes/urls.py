@@ -8,6 +8,16 @@ from app.models.urls import Urls
 urls_bp = Blueprint("urls", __name__)
 
 
+def urls_model_to_dict(u):
+    output = model_to_dict(u)
+
+    # Model to dict does not format dates properly
+    output["created_at"] = datetime.isoformat(u.created_at)
+    output["updated_at"] = datetime.isoformat(u.updated_at)
+
+    return output
+
+
 @urls_bp.route("/urls")
 def list_urls():
 
@@ -92,7 +102,7 @@ def list_urls():
 
             urls = urls.where(Urls.updated_at == parsed_updated_at)
 
-        return jsonify([model_to_dict(u) for u in urls])
+        return jsonify([urls_model_to_dict(u) for u in urls])
     except Exception as e:
         # This should only happen if there's something wrong with the db
         return jsonify({"error": f"Internal Error: {e}"}), 500
