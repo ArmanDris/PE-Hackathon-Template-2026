@@ -6,6 +6,8 @@ from urllib.parse import urlparse
 
 from flask import Blueprint, abort, jsonify, redirect, request
 
+from app.database import (get_obj_from_redis_or_none, get_redis,
+                          save_obj_to_redis)
 from app.models.urls import Urls
 from app.models.users import Users
 
@@ -68,10 +70,23 @@ def urls_model_to_dict(u):
     }
 
 
+def clear_redis_cache(r, set_name):
+    items = r.smembers(set_name)
+    for item in items:
+        r.delete(item.decode())
+
+    r.delete(set_name)
+
+
 @urls_bp.get("/urls")
 def list_urls():
 
+    r = get_redis()
     try:
+        cached_out = get_obj_from_redis_or_none(r, request.full_path)
+        if cached_out is not None:
+            return jsonify(cached_out)
+
         urls = Urls.select()
 
         # Filtering
@@ -152,7 +167,11 @@ def list_urls():
 
             urls = urls.where(Urls.updated_at == parsed_updated_at)
 
-        return jsonify([urls_model_to_dict(u) for u in urls])
+        # Cache output
+        output = [urls_model_to_dict(u) for u in urls]
+        save_obj_to_redis(r, request.full_path, output)
+        r.sadd("urls_cache", request.full_path)
+        return jsonify(output)
     except Exception as e:
         # This should only happen if there's something wrong with the db
         return jsonify({"error": f"Internal Error: {e}"}), 500
@@ -226,6 +245,7 @@ def create_url():
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
+        clear_redis_cache(get_redis(), "urls_cache")
         return jsonify(urls_model_to_dict(new_url)), 201
 
     except Exception as e:
@@ -277,6 +297,7 @@ def update_url(id):
         url.is_active = is_active
 
     try:
+        clear_redis_cache(get_redis(), "urls_cache")
         url.save()
     except Exception as e:
         return jsonify({"error": f"Internal Error: Failed to update url: {e}"}), 500
@@ -295,6 +316,7 @@ def delete_url_by_id(id: int):
         )
 
     try:
+        clear_redis_cache(get_redis(), "urls_cache")
         url.delete_instance()
     except Exception as e:
         return jsonify({"error": f"Internal Error: Failed to delete url: {e}"}), 500

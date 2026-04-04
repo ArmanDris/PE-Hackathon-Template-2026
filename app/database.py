@@ -1,5 +1,7 @@
 import os
+import pickle
 
+import redis
 from peewee import DatabaseProxy, Model, PostgresqlDatabase
 
 db = DatabaseProxy()
@@ -21,6 +23,7 @@ def init_db(app=None):
     db.initialize(database)
 
     if app:
+
         @app.before_request
         def _db_connect():
             db.connect(reuse_if_open=True)
@@ -28,3 +31,22 @@ def init_db(app=None):
         @app.teardown_appcontext
         def _db_close(exc):
             return None
+
+
+def get_redis():
+    return redis.Redis(
+        host=os.environ.get("REDIS_HOST", "redis"),
+        port=int(os.environ.get("REDIS_PORT", 6379)),
+        decode_responses=False,
+    )
+
+
+def save_obj_to_redis(r, key, obj):
+    r.set(key, pickle.dumps(obj, protocol=pickle.HIGHEST_PROTOCOL))
+
+
+def get_obj_from_redis_or_none(r: redis.Redis, key):
+    if not r.exists(key):
+        return None
+
+    return pickle.loads(r.get(key))
