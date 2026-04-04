@@ -5,6 +5,8 @@ requires-python = ">=3.13"
 dependencies = [
     "faker>=33.0",
     "flask>=3.1",
+    "gunicorn>=25.3.0",
+    "locust>=2.43.4",
     "peewee>=3.17",
     "psycopg2-binary>=2.9",
     "pytest>=9.0.2",

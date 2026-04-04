@@ -227,6 +227,7 @@ def create_url():
         return jsonify(urls_model_to_dict(new_url)), 201
 
     except Exception as e:
+        print("INTERNAL ERROR: ", e)
         # This should only happen if there's something wrong with the db
         return jsonify({"error": f"Internal Error: {e}"}), 500
 
