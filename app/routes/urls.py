@@ -242,3 +242,44 @@ def get_url_by_id(id: int):
         )
 
     return jsonify(urls_model_to_dict(url)), 200
+
+
+@urls_bp.put("/urls/<int:id>")
+def update_url(id):
+    url = Urls.get_or_none(Urls.id == id)
+
+    if url is None:
+        return (
+            jsonify({"error": f"Error: url with id {id} does not exist"}),
+            400,
+        )
+
+    original_url = request.args.get("original_url", None)
+    if original_url is not None:
+        url.original_url = original_url
+
+    title = request.args.get("title", None)
+    if title is not None:
+        url.title = title
+
+    is_active = request.args.get("is_active", None)
+    if is_active is not None:
+        true_values = {"true", "1", "yes", "y", "on"}
+        false_values = {"false", "0", "no", "n", "off"}
+        normalized = is_active.strip().lower()
+
+        if normalized in true_values:
+            parsed_is_active = True
+        elif normalized in false_values:
+            parsed_is_active = False
+        else:
+            return jsonify({"error": f"Invalid is_active: {is_active}"}), 400
+
+        url.is_active = parsed_is_active
+
+    try:
+        url.save()
+    except Exception as e:
+        return jsonify({"error": f"Internal Error: Failed to update url: {e}"}), 500
+
+    return jsonify(urls_model_to_dict(url)), 200

@@ -254,3 +254,56 @@ def test_get_url_by_id_negative_path(client):
     response = client.get("/urls/1234")
 
     assert response.status_code == 400
+
+
+def test_update_url_positive_path(client):
+    now = datetime.now(timezone.utc)
+    url = Urls.create(
+        user_id=1,
+        short_code="abc123",
+        original_url="https://fun.co",
+        title="A Link",
+        is_active=True,
+        created_at=now,
+        updated_at=now,
+    )
+
+    response = client.put(
+        f"/urls/{url.id}?original_url=https://example.com&title=Updated+Title&is_active=false"
+    )
+
+    assert response.status_code == 200
+    assert response.json is not None
+    data = response.json
+
+    assert data["id"] == url.id
+    assert data["original_url"] == "https://example.com"
+    assert data["title"] == "Updated Title"
+    assert data["is_active"] is False
+
+    updated_url = Urls.get_or_none(Urls.id == url.id)
+    assert updated_url is not None
+    assert updated_url.original_url == "https://example.com"
+    assert updated_url.title == "Updated Title"
+    assert updated_url.is_active is False
+
+
+def test_update_url_negative_path(client):
+    now = datetime.now(timezone.utc)
+    url = Urls.create(
+        user_id=1,
+        short_code="abc123",
+        original_url="https://fun.co",
+        title="A Link",
+        is_active=True,
+        created_at=now,
+        updated_at=now,
+    )
+
+    # id does not exist
+    response = client.put("/urls/1234?title=Updated+Title")
+    assert response.status_code == 400
+
+    # invalid is_active value
+    response = client.put(f"/urls/{url.id}?is_active=maybe")
+    assert response.status_code == 400
