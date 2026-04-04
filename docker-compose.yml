@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
-      - "5432:5432"
+      - "5430:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
@@ -49,8 +49,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 5000:5000
       - 8089:8089 # For locust
+      - "${PORT:-5000}:5000"
     env_file:
       - .env
     volumes:

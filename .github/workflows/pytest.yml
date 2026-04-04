@@ -1,9 +1,9 @@
-name: Pytest
+name: CI-CD
 
 on: [push]
 
 jobs:
-  test:
+  integrate:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,3 +14,36 @@ jobs:
       - uses: astral-sh/setup-uv@v1
       - run: uv sync
       - run: uv run pytest -v --cov=app --cov-report=term-missing --cov-fail-under=70
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: server_ssh
+    needs: integrate
+    steps:
+      - name: Deploy to server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          echo "KNOWN_HOSTS: $KNOWN_HOSTS"
+
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key ubuntu@54.241.201.248 "bash -s" << 'EOF'
+          set -euo pipefail
+          echo "Deploying YeOldLinkShortner"
+
+          cd pe-hackathon-root/PE-Hackathon-Template-2026
+
+          git pull
+
+          docker compose up --build -d
+
+          docker image prune -f
+
+          echo "Deployment complete!"
+          EOF
