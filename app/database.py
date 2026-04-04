@@ -15,12 +15,13 @@ def init_db(app=None):
     # For integration testing, we use an isolated, ephemeral sqlite database
     if database_url and database_url.startswith("sqlite://"):
         from peewee import SqliteDatabase
+
         # strip the prefix
         prefix = "sqlite:///"
         if database_url.startswith(prefix):
-            path = database_url[len(prefix):]
+            path = database_url[len(prefix) :]
         else:
-            path = database_url[len("sqlite://"):]
+            path = database_url[len("sqlite://") :]
         database = SqliteDatabase(path or ":memory:")
     else:
         database = PostgresqlDatabase(

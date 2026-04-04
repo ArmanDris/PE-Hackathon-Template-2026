@@ -29,7 +29,6 @@ def app():
 
     yield app
 
-    print("dropped stuff")
     test_db.drop_tables(TEST_MODELS)
     test_db.close()
 
