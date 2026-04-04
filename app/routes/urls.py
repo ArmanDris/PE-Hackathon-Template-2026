@@ -1,11 +1,59 @@
-from datetime import datetime
+import ipaddress
+import re
+import secrets
+from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 from flask import Blueprint, jsonify, request
 from playhouse.shortcuts import model_to_dict
 
 from app.models.urls import Urls
+from app.models.users import Users
 
 urls_bp = Blueprint("urls", __name__)
+
+
+def is_valid_http_url(url: str) -> bool:
+    if not isinstance(url, str):
+        return False
+
+    candidate = url.strip()
+    if not candidate:
+        return False
+
+    if any(char.isspace() for char in candidate):
+        return False
+
+    parsed = urlparse(candidate)
+    if parsed.scheme not in {"http", "https"}:
+        return False
+
+    if not parsed.netloc or not parsed.hostname:
+        return False
+
+    hostname = parsed.hostname
+    if hostname == "localhost":
+        return True
+
+    try:
+        ipaddress.ip_address(hostname)
+        return True
+    except ValueError:
+        pass
+
+    if "." not in hostname:
+        return False
+
+    labels = hostname.split(".")
+    for label in labels:
+        if not label:
+            return False
+        if label.startswith("-") or label.endswith("-"):
+            return False
+        if not re.fullmatch(r"[A-Za-z0-9-]+", label):
+            return False
+
+    return True
 
 
 def urls_model_to_dict(u):
@@ -18,7 +66,7 @@ def urls_model_to_dict(u):
     return output
 
 
-@urls_bp.route("/urls")
+@urls_bp.get("/urls")
 def list_urls():
 
     try:
@@ -103,6 +151,81 @@ def list_urls():
             urls = urls.where(Urls.updated_at == parsed_updated_at)
 
         return jsonify([urls_model_to_dict(u) for u in urls])
+    except Exception as e:
+        # This should only happen if there's something wrong with the db
+        return jsonify({"error": f"Internal Error: {e}"}), 500
+
+
+def generate_short_code():
+    characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    output = ""
+
+    for _ in range(6):
+        # Use secrets to ensure it's properly random
+        output += secrets.choice(characters)
+
+    return output
+
+
+@urls_bp.post("/urls")
+def create_url():
+    data = request.json
+
+    if data is None:
+        return (
+            jsonify({"error": "Error: Json data required"}),
+            400,
+        )
+
+    user_id = data.get("user_id", None)
+    if user_id is None:
+        return (
+            jsonify({"error": "Error: User id required"}),
+            400,
+        )
+
+    # Check to ensure this user is real
+    user = Users.get_or_none(Users.id == user_id)
+    if user is None:
+        return (
+            jsonify({"error": f"Error: No user exists for id {user_id}"}),
+            400,
+        )
+
+    original_url = data.get("original_url", None)
+    if original_url is None:
+        return (
+            jsonify({"error": "Error: original_url required"}),
+            400,
+        )
+
+    original_url = original_url.strip()
+    if not is_valid_http_url(original_url):
+        return (
+            jsonify({"error": "Error: original_url must be a valid URL"}),
+            400,
+        )
+
+    title = data.get("title", None)
+    if title is None:
+        return (
+            jsonify({"error": "Error: title is required"}),
+            400,
+        )
+
+    try:
+        short_code = generate_short_code()
+        new_url = Urls.create(
+            user_id=user_id,
+            original_url=original_url,
+            title=title,
+            is_active=True,
+            short_code=short_code,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        return jsonify(urls_model_to_dict(new_url)), 201
+
     except Exception as e:
         # This should only happen if there's something wrong with the db
         return jsonify({"error": f"Internal Error: {e}"}), 500
