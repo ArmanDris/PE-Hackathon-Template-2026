@@ -9,7 +9,7 @@ from app.models.users import Users
 from app.routes import register_routes
 
 
-def create_app():
+def create_app(is_pytest=False):
     load_dotenv()
 
     app = Flask(__name__)
@@ -18,7 +18,8 @@ def create_app():
 
     from app import models  # noqa: F401 - registers models with Peewee
 
-    db.create_tables([Users, Events, Urls], safe=True)
+    if not is_pytest:
+        db.create_tables([Users, Events, Urls], safe=True)
 
     register_routes(app)
 

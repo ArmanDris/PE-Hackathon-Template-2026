@@ -11,7 +11,7 @@ TEST_MODELS = [Users, Urls]
 
 @pytest.fixture()
 def app():
-    app = create_app()
+    app = create_app(is_pytest=True)
     app.config.update(TESTING=True)
 
     # Replace Postgres with in-memory SQLite for tests
