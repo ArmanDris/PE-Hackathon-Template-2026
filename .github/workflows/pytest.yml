@@ -18,6 +18,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: server_ssh
+    needs: integrate
     steps:
       - name: Deploy to server
         env:
