@@ -16,4 +16,4 @@ RUN uv sync --no-dev
 # Copy app source.
 COPY . .
 
-CMD ["uv", "run", "gunicorn", "-w", "12", "app:create_app()", "-b", "0.0.0.0:5000"]
+CMD ["uv", "run", "gunicorn", "-w", "2", "app:create_app()", "-b", "0.0.0.0:5000"]

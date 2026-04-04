@@ -23,6 +23,27 @@ services:
     networks:
       - backend
 
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    environment:
+      DB_USER: ${DATABASE_USER}
+      DB_PASSWORD: ${DATABASE_PASSWORD}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DATABASE_NAME}
+      AUTH_TYPE: scram-sha-256
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 1000
+      DEFAULT_POOL_SIZE: 20
+      ADMIN_USERS: ${DATABASE_USER}
+    ports:
+      - "6432:5432"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend
+
   web:
     build:
       context: .
@@ -38,10 +59,10 @@ services:
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_HOST: pgbouncer
     depends_on:
-      db:
-        condition: service_healthy
+      pgbouncer:
+        condition: service_started
     networks:
       - backend
 
