@@ -1,11 +1,59 @@
-from datetime import datetime
+import ipaddress
+import re
+import secrets
+from datetime import datetime, timezone
+from urllib.parse import urlparse
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, abort, jsonify, redirect, request
 from playhouse.shortcuts import model_to_dict
 
 from app.models.urls import Urls
+from app.models.users import Users
 
 urls_bp = Blueprint("urls", __name__)
+
+
+def is_valid_http_url(url: str) -> bool:
+    if not isinstance(url, str):
+        return False
+
+    candidate = url.strip()
+    if not candidate:
+        return False
+
+    if any(char.isspace() for char in candidate):
+        return False
+
+    parsed = urlparse(candidate)
+    if parsed.scheme not in {"http", "https"}:
+        return False
+
+    if not parsed.netloc or not parsed.hostname:
+        return False
+
+    hostname = parsed.hostname
+    if hostname == "localhost":
+        return True
+
+    try:
+        ipaddress.ip_address(hostname)
+        return True
+    except ValueError:
+        pass
+
+    if "." not in hostname:
+        return False
+
+    labels = hostname.split(".")
+    for label in labels:
+        if not label:
+            return False
+        if label.startswith("-") or label.endswith("-"):
+            return False
+        if not re.fullmatch(r"[A-Za-z0-9-]+", label):
+            return False
+
+    return True
 
 
 def urls_model_to_dict(u):
@@ -18,7 +66,7 @@ def urls_model_to_dict(u):
     return output
 
 
-@urls_bp.route("/urls")
+@urls_bp.get("/urls")
 def list_urls():
 
     try:
@@ -106,3 +154,164 @@ def list_urls():
     except Exception as e:
         # This should only happen if there's something wrong with the db
         return jsonify({"error": f"Internal Error: {e}"}), 500
+
+
+def generate_short_code():
+    characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    output = ""
+
+    for _ in range(6):
+        # Use secrets to ensure it's properly random
+        output += secrets.choice(characters)
+
+    return output
+
+
+@urls_bp.post("/urls")
+def create_url():
+    data = request.json
+
+    if data is None:
+        return (
+            jsonify({"error": "Error: Json data required"}),
+            400,
+        )
+
+    user_id = data.get("user_id", None)
+    if user_id is None:
+        return (
+            jsonify({"error": "Error: User id required"}),
+            400,
+        )
+
+    # Check to ensure this user is real
+    user = Users.get_or_none(Users.id == user_id)
+    if user is None:
+        return (
+            jsonify({"error": f"Error: No user exists for id {user_id}"}),
+            400,
+        )
+
+    original_url = data.get("original_url", None)
+    if original_url is None:
+        return (
+            jsonify({"error": "Error: original_url required"}),
+            400,
+        )
+
+    original_url = original_url.strip()
+    if not is_valid_http_url(original_url):
+        return (
+            jsonify({"error": "Error: original_url must be a valid URL"}),
+            400,
+        )
+
+    title = data.get("title", None)
+    if title is None:
+        return (
+            jsonify({"error": "Error: title is required"}),
+            400,
+        )
+
+    try:
+        short_code = generate_short_code()
+        new_url = Urls.create(
+            user_id=user_id,
+            original_url=original_url,
+            title=title,
+            is_active=True,
+            short_code=short_code,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        return jsonify(urls_model_to_dict(new_url)), 201
+
+    except Exception as e:
+        # This should only happen if there's something wrong with the db
+        return jsonify({"error": f"Internal Error: {e}"}), 500
+
+
+@urls_bp.get("/urls/<int:id>")
+def get_url_by_id(id: int):
+    url = Urls.get_or_none(Urls.id == id)
+
+    if url is None:
+        return (
+            jsonify({"error": f"Error: url with id {id} does not exist"}),
+            400,
+        )
+
+    return jsonify(urls_model_to_dict(url)), 200
+
+
+@urls_bp.put("/urls/<int:id>")
+def update_url(id):
+    url = Urls.get_or_none(Urls.id == id)
+
+    if url is None:
+        return (
+            jsonify({"error": f"Error: url with id {id} does not exist"}),
+            400,
+        )
+
+    data = request.json
+    if data is None:
+        return (
+            jsonify({"error": f"Error: json payload is required"}),
+            400,
+        )
+
+    original_url = data.get("original_url", None)
+    if original_url is not None:
+        url.original_url = original_url
+
+    title = data.get("title", None)
+    if title is not None:
+        url.title = title
+
+    is_active = data.get("is_active", None)
+    if is_active is not None:
+        url.is_active = is_active
+
+    try:
+        url.save()
+    except Exception as e:
+        return jsonify({"error": f"Internal Error: Failed to update url: {e}"}), 500
+
+    return jsonify(urls_model_to_dict(url)), 200
+
+
+@urls_bp.delete("/urls/<int:id>")
+def delete_url_by_id(id: int):
+    url = Urls.get_or_none(Urls.id == id)
+
+    if url is None:
+        return (
+            jsonify({"error": f"Error: url with id {id} does not exist"}),
+            400,
+        )
+
+    try:
+        url.delete_instance()
+    except Exception as e:
+        return jsonify({"error": f"Internal Error: Failed to delete url: {e}"}), 500
+
+    return jsonify(urls_model_to_dict(url)), 200
+
+
+@urls_bp.route("/urls/<shortcode>/redirect")
+@urls_bp.route("/<shortcode>")
+def redirect_url(shortcode):
+    if len(shortcode) != 6:
+        abort(404)
+
+    # TODO: Maybe add sorting on short_code field?
+    url = Urls.get_or_none(Urls.short_code == shortcode)
+
+    if url is None:
+        abort(404)
+
+    if not url.is_active:
+        abort(404)
+
+    return redirect(url.original_url), 302
