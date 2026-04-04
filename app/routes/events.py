@@ -41,25 +41,25 @@ def prepare_values(event_val):
 
     return event_val # The event with processed values or the unchanged if none of the keys needed it
 
-            
-# This lets me build a list of filters that will be used when
-# searching the events database, as far as i know this will
-# be abe to cover all the post requests(if they even exist)
-# QUERY_FIELDS:
-# See top of file
 def build_search_list(query_json):
     if len(query_json) <= 0:
-        return jsonify({"error": "No post body was provided"}), 400
-    else:
-        filters = []
-        for key, value in query_json.items():
-            filter = QUERY_FIELDS.get(key)
-            if not filter or not value:
-                continue
-            filters.append(filter == value)
-        return filters
-    return jsonify({"error": "There was a problem with handling the request"}), 400
+        return jsonify({"error", "No post body was provided"}), 400
 
+    filters = []
+    for key, value, in query_json.items():
+        field = QUERY_FIELDS.get(key)
+        if not field or value is None:
+            continue
+        #temp fix for details
+        if key == "details":
+            try:
+                filters.append(field.contains(json.dumps(value)))
+            except Exception:
+                continue
+        else:
+            filters.append(field == value)
+
+    return filters
 
 # This will get the values from the event db that correspond
 # to the filter provided in the post body
@@ -69,9 +69,9 @@ def get_events_filtered(json_query):
         return jsonify({"error": "No post body was provided"}), 400 # again not sure but wasnt comfortable leaving empty
     if len(filters) <= 0:
         return jsonify({"error": "Query parameters invalid."}), 400 # all these need to be changed with new logging setup i think
-    query = Events.select().dicts()
-    result = query.where(*filters)
-    cleaned_result = [prepare_values(r) for r in result]
+    query = Events.select().where(*filters).dicts()
+    #result = query.where(*filters)
+    cleaned_result = [prepare_values(r) for r in query]
     return jsonify(cleaned_result)
 
 
