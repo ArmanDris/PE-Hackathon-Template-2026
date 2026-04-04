@@ -300,6 +300,7 @@ def delete_url_by_id(id: int):
 
 
 @urls_bp.route("/urls/<shortcode>/redirect")
+@urls_bp.route("/<shortcode>")
 def redirect_url(shortcode):
     if len(shortcode) != 6:
         abort(404)
