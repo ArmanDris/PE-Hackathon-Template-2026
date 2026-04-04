@@ -18,7 +18,6 @@ def users_bulk():
     file_storage = next(iter(request.files.values()))
     if not file_storage.filename:
         return jsonify({"error": "No selected file"}), 400
-    # (Optionally) drop all existing users to avoid duplicates
     Users.delete().execute()
 
     count = 0
@@ -28,14 +27,12 @@ def users_bulk():
         for row in reader:
             if not validate_user(row):
                 raise Exception(f"{row} is not a valid user object")
-            # Prepare data for insertion, converting types
             user_data = {
                 "id": int(row.get("id")),
                 "username": row.get("username"),
                 "email": row.get("email"),
                 "created_at": datetime.fromisoformat(row.get("created_at"))
             }
-            # Insert new user record with provided ID
             Users.create(**user_data)
             count += 1
     except Exception as e:

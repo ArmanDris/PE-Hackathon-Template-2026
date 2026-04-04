@@ -11,7 +11,6 @@ class BaseModel(Model):
 
 
 def init_db(app=None):
-    # Allow DATABASE_URL for SQLite in-memory during testing
     database_url = os.environ.get("DATABASE_URL")
     # For integration testing, we use an isolated, ephemeral sqlite database
     if database_url and database_url.startswith("sqlite://"):
