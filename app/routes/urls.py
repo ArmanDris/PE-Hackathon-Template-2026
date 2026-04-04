@@ -279,3 +279,21 @@ def update_url(id):
         return jsonify({"error": f"Internal Error: Failed to update url: {e}"}), 500
 
     return jsonify(urls_model_to_dict(url)), 200
+
+
+@urls_bp.delete("/urls/<int:id>")
+def delete_url_by_id(id: int):
+    url = Urls.get_or_none(Urls.id == id)
+
+    if url is None:
+        return (
+            jsonify({"error": f"Error: url with id {id} does not exist"}),
+            400,
+        )
+
+    try:
+        url.delete_instance()
+    except Exception as e:
+        return jsonify({"error": f"Internal Error: Failed to delete url: {e}"}), 500
+
+    return jsonify(urls_model_to_dict(url)), 200
