@@ -2,7 +2,7 @@ from peewee import AutoField, IntegerField, CharField, DateTimeField
 from app.database import BaseModel
 from playhouse.postgres_ext import JSONField
 
-class Event(BaseModel):
+class Events(BaseModel):
     id = AutoField()
     # index=True makes filtering & grouping optimized
     url_id = IntegerField(index=True)
