@@ -60,7 +60,6 @@ def build_search_list(query_json):
 
 # Will filter the Events based on query param, if none are provided it will return the whole list
 def get_events_filtered(query_param):
-    print("QUery params: ", query_param)
     try :
         filters = build_search_list(query_param)
     except Exception as e:
@@ -77,7 +76,7 @@ def get_events_filtered(query_param):
     query = query.dicts()
 
     cleaned_result = [prepare_values(r) for r in query]
-    return jsonify(cleaned_result)
+    return cleaned_result
 
 
 @events_bp.route("/events", methods=['GET', 'POST'])
@@ -87,26 +86,14 @@ def list_events():
         query = request.args.to_dict()
         try:
             filtered_response = get_events_filtered(query)
-            return filtered_response
 
-            # Legacy response used to format properly, might still need to be used
-            #return Response(
-            #    json.dumps(json_list, indent=2, default=str),
-            #    mimetype="application/json"
-            #)
+            return Response(
+                json.dumps(filtered_response, indent=2, default=str),
+                mimetype="application/json"
+            )
         except Exception as e:
             # Inspired changes, apparently this can happen if there is something wrong with the db
             return jsonify({"error": f"Internal Error: {e}"}), 500
-
-        #try:
-        #    query = request.get_json()
-        #    if query is None:
-        #        return jsonify({"error": "error"}), 400 # dont know what to do here because maybe empty post shoudl return something
-        #    else: # Writing explicitly for clarity from comment above
-        #        query_response = get_events_filtered(query)
-        #        return query_response
-        #except Exception as e:
-        #    return jsonify({"error": f"Internal Erorr: {e}"}), 500
 
     if request.method == 'POST':
         return jsonify({"error:": "Be kind to all"}), 418
