@@ -20,6 +20,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
     networks:
       - backend
 
@@ -61,6 +62,7 @@ services:
       - .env
     volumes:
       - .:/app
+    restart: unless-stopped
     environment:
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
