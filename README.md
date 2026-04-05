@@ -66,7 +66,7 @@ curl http://localhost:5000/health
 cp .env.example .env
 
 # 2. Build and start multiple instances of web
-docker compose up --build --scale web=3
+`docker compose up --build --scale web=3`
 
 # 3. Verify
 curl http://localhost:5000/health
@@ -204,6 +204,7 @@ def load_csv(filepath):
     with db.atomic():
         for batch in chunked(rows, 100):
             Product.insert_many(batch).execute()
+            # *IMPORTANT* This will save any nested json as a string
 ```
 
 ## Useful Peewee Patterns
