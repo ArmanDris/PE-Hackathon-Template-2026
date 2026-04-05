@@ -66,8 +66,9 @@ curl http://localhost:5000/health
 cp .env.example .env
 
 # 2. Build and start multiple instances of web
-`docker compose up --build --scale web=3`
-
+`
+docker compose up --build --scale web=3 # Note. 'web=3'  is the number of instances of the web container
+`
 # 3. Verify
 curl http://localhost:5000/health
 # → {"status":"ok"}
