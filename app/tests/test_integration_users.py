@@ -355,3 +355,63 @@ def test_update_user_no_fields(client):
     resp = client.put(f"/users/{user.id}", json={})
     assert resp.status_code == 400
     assert resp.get_json() == {"error": "Error: username or email required"}
+    
+def test_delete_user_success(client):
+    # Create and then delete a user
+    from datetime import datetime as _dt
+    created = _dt(2025, 5, 5, 12, 34, 56)
+    user = Users.create(username="deluser", email="del@example.com", created_at=created)
+    resp = client.delete(f"/users/{user.id}")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    # Response should match deleted user
+    assert data == {
+        "id": user.id,
+        "username": "deluser",
+        "email": "del@example.com",
+        "created_at": created.isoformat()
+    }
+    # Ensure user is removed from DB
+    assert Users.get_or_none(Users.id == user.id) is None
+
+def test_delete_user_not_found(client):
+    # Attempt to delete non-existent user
+    resp = client.delete("/users/9999")
+    assert resp.status_code == 404
+    assert resp.get_json() == {"error": "Error: user with id 9999 does not exist"}
+
+def test_create_user_after_bulk_import_unique_id(client):
+    # Bulk-import users with high IDs, then create a new user and ensure the ID is max+1
+    csv_content = (
+        "id,username,email,created_at\n"
+        "100,u100,u100@example.com,2025-01-01 00:00:00\n"
+        "200,u200,u200@example.com,2025-02-02 00:00:00"
+    )
+    data = {'file': (io.BytesIO(csv_content.encode('utf-8')), 'users.csv')}
+    resp = client.post(
+        '/users/bulk', data=data,
+        content_type='multipart/form-data'
+    )
+    assert resp.status_code == 200
+    assert resp.get_json().get('count') == 2
+    # Two users in DB
+    assert Users.select().count() == 2
+
+    # Create a new user; expect ID = 200 + 1 = 201
+    resp2 = client.post(
+        "/users",
+        json={"username": "newu", "email": "newu@example.com"}
+    )
+    assert resp2.status_code == 201
+    data2 = resp2.get_json()
+    assert data2['id'] == 201
+    assert data2['username'] == 'newu'
+    assert data2['email'] == 'newu@example.com'
+    # created_at is valid ISO datetime
+    from datetime import datetime as _dt
+    _ = _dt.fromisoformat(data2['created_at'])
+    # DB now has 3 users, including the new one
+    assert Users.select().count() == 3
+    u = Users.get_by_id(201)
+    assert u.username == 'newu'
+    assert u.email == 'newu@example.com'
