@@ -16,6 +16,9 @@ def create_app(is_pytest=False):
 
     app = Flask(__name__)
 
+    # Added by ronan for his logs endpoint auth
+    app.secret_key = "mylittlesecret"
+
     init_db(app)
 
     if os.environ.get("DEBUG_PROFILE", "false") == "true":
