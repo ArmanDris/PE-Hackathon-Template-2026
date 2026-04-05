@@ -33,6 +33,11 @@ def init_db(app=None):
             return None
 
 
+def should_use_redis():
+    # There's no redis in the autograder so we have to dissable it
+    return os.environ.get("USE_REDIS", False) is not False
+
+
 def get_redis():
     r = redis.Redis(
         host=os.environ.get("REDIS_HOST", "redis"),
