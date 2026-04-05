@@ -424,4 +424,11 @@ def redirect_url(shortcode):
         r.set(shortcode, url.original_url.encode())
         r.sadd("urls_cache", shortcode)
         r.close()
+
+    log_event(
+        url.id,
+        url.user_id,
+        "click",
+        {"referrer": request.referrer},
+    )
     return redirect(url.original_url), 302
