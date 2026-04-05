@@ -16,4 +16,6 @@ RUN uv sync --no-dev
 # Copy app source.
 COPY . .
 
-CMD ["uv", "run", "gunicorn", "-w", "2", "app:create_app()", "-b", "0.0.0.0:5000"]
+EXPOSE 5000
+
+CMD ["sh", "-c", "uv run gunicorn -k gevent -w ${GUNICORN_WORKERS:-2} 'app:create_app()' -b 0.0.0.0:5000 --timeout ${GUNICORN_TIMEOUT:-5}"]

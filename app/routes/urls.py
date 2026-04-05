@@ -1,11 +1,13 @@
 import ipaddress
+import json
 import re
 import secrets
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 
-from flask import Blueprint, abort, jsonify, redirect, request
+from flask import Blueprint, Response, abort, jsonify, redirect, request
 
+from app.database import get_redis
 from app.models.urls import Urls
 from app.models.users import Users
 
@@ -68,10 +70,24 @@ def urls_model_to_dict(u):
     }
 
 
+def clear_redis_cache(r, set_name):
+    items = r.smembers(set_name)
+    for item in items:
+        r.delete(item.decode())
+
+    r.delete(set_name)
+
+
 @urls_bp.get("/urls")
 def list_urls():
 
+    r = get_redis()
     try:
+        cached_out = r.get(request.full_path)
+        if cached_out is not None:
+            r.close()
+            return Response(cached_out, mimetype="application/json")
+
         urls = Urls.select()
 
         # Filtering
@@ -152,7 +168,13 @@ def list_urls():
 
             urls = urls.where(Urls.updated_at == parsed_updated_at)
 
-        return jsonify([urls_model_to_dict(u) for u in urls])
+        # Serialize once; reuse the exact JSON bytes for cache and response.
+        output = [urls_model_to_dict(u) for u in urls]
+        output_json = json.dumps(output)
+        r.set(request.full_path, output_json)
+        r.sadd("urls_cache", request.full_path)
+        r.close()
+        return Response(output_json, mimetype="application/json")
     except Exception as e:
         # This should only happen if there's something wrong with the db
         return jsonify({"error": f"Internal Error: {e}"}), 500
@@ -226,6 +248,9 @@ def create_url():
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
+        r = get_redis()
+        clear_redis_cache(r, "urls_cache")
+        r.close()
         return jsonify(urls_model_to_dict(new_url)), 201
 
     except Exception as e:
@@ -277,6 +302,9 @@ def update_url(id):
         url.is_active = is_active
 
     try:
+        r = get_redis()
+        clear_redis_cache(r, "urls_cache")
+        r.close()
         url.save()
     except Exception as e:
         return jsonify({"error": f"Internal Error: Failed to update url: {e}"}), 500
@@ -295,6 +323,7 @@ def delete_url_by_id(id: int):
         )
 
     try:
+        clear_redis_cache(get_redis(), "urls_cache")
         url.delete_instance()
     except Exception as e:
         return jsonify({"error": f"Internal Error: Failed to delete url: {e}"}), 500
@@ -308,7 +337,15 @@ def redirect_url(shortcode):
     if len(shortcode) != 6:
         abort(404)
 
-    # TODO: Maybe add sorting on short_code field?
+    r = get_redis()
+    if r.exists(shortcode):
+        # The cache can be clearned between r.exists and r.get
+        out = r.get(shortcode)
+        if out is not None:
+            out = out.decode()
+            r.close()
+            return redirect(out), 302
+
     url = Urls.get_or_none(Urls.short_code == shortcode)
 
     if url is None:
@@ -317,4 +354,7 @@ def redirect_url(shortcode):
     if not url.is_active:
         abort(404)
 
+    r.set(shortcode, url.original_url.encode())
+    r.sadd("urls_cache", shortcode)
+    r.close()
     return redirect(url.original_url), 302
