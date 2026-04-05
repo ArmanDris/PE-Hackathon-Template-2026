@@ -7,7 +7,8 @@ from urllib.parse import urlparse
 
 from flask import Blueprint, Response, abort, jsonify, redirect, request
 
-from app.database import get_redis, should_use_redis
+from app.database import db, get_redis, should_use_redis
+from app.models.events import Events
 from app.models.urls import Urls
 from app.models.users import Users
 
@@ -76,6 +77,23 @@ def clear_redis_cache(r, set_name):
         r.delete(item.decode())
 
     r.delete(set_name)
+
+
+def log_event(url_id, user_id, event_type, details):
+    try:
+        if not db.table_exists(Events._meta.table_name):
+            return
+
+        Events.create(
+            url_id=url_id,
+            user_id=user_id,
+            event_type=event_type,
+            timestamp=datetime.now(timezone.utc),
+            details=details,
+        )
+    except Exception:
+        # Event logging should never break the URL routes.
+        return
 
 
 @urls_bp.get("/urls")
@@ -254,6 +272,13 @@ def create_url():
             r = get_redis()
             clear_redis_cache(r, "urls_cache")
             r.close()
+
+        log_event(
+            new_url.id,
+            user_id,
+            "created",
+            {"short_code": short_code, "original_url": original_url},
+        )
         return jsonify(urls_model_to_dict(new_url)), 201
 
     except Exception as e:
@@ -310,6 +335,30 @@ def update_url(id):
             clear_redis_cache(r, "urls_cache")
             r.close()
         url.save()
+
+        if original_url is not None:
+            log_event(
+                url.id,
+                url.user_id,
+                "updated",
+                {"field": "original_url", "new_value": original_url},
+            )
+
+        if title is not None:
+            log_event(
+                url.id,
+                url.user_id,
+                "updated",
+                {"field": "title", "new_value": title},
+            )
+
+        if is_active is not None:
+            log_event(
+                url.id,
+                url.user_id,
+                "updated",
+                {"field": "is_active", "new_value": is_active},
+            )
     except Exception as e:
         return jsonify({"error": f"Internal Error: Failed to update url: {e}"}), 500
 
@@ -332,6 +381,13 @@ def delete_url_by_id(id: int):
             clear_redis_cache(r, "urls_cache")
             r.close()
         url.delete_instance()
+
+        log_event(
+            url.id,
+            url.user_id,
+            "deleted",
+            {"reason": "user_requested"},
+        )
     except Exception as e:
         return jsonify({"error": f"Internal Error: Failed to delete url: {e}"}), 500
 
