@@ -1,4 +1,4 @@
-## 404 Handing
+## 404 Not Found Handing
 
 There are no global error-handler overrides, so an un-matched route
 will return Flasks HTML 404 page.
@@ -10,7 +10,7 @@ In our URL-redirect handler, if the short-code is invalid or the URL is
 inactive will will call `abort(404)` telling the user that something
 was not found.
 
-## Internal Errors (500)
+## 500 Internal Errors Handling
 Each route is wrapped in a `try/except Exception` block around its
 core DB or business logic, this way if something unexpected happens
 we can return a 500 error to the client indicating that their request
