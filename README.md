@@ -40,7 +40,7 @@ Our project was based on seed files provided by [MLH PE Hackathon (https://mlh-p
 
 ```bash
 # 1. Clone the repo
-git clone [<repo-url>](https://github.com/ArmanDris/PE-Hackathon-Template-2026.git) && cd PE-Hackathon-Template-2026.git
+git clone https://github.com/ArmanDris/PE-Hackathon-Template-2026.git && cd PE-Hackathon-Template-2026.git
 
 # 2. Install dependencies
 uv sync
