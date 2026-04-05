@@ -164,13 +164,14 @@ def list_events():
                 create_event[key] = safe_val
 
         try:
+            # Verify user actually exists
             if Users.get_or_none(Users.id == create_event["user_id"]) is None:
                 return jsonify({"error": f"Error: No user with matching id {create_event["user_id"]}"})
+            
         except Exception as e:
             return jsonify({"error": "Error: There was a problem during authentication"}), 400 # ..."authentication"
             
         try:
-            print(create_event)
             Events.create(
                 url_id=create_event["url_id"],
                 user_id=create_event["user_id"],
