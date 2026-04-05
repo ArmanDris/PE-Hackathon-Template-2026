@@ -74,6 +74,7 @@ def build_search_list(query_json):
         config = EVENT_FIELDS.get(key)
         if not config or value is None:
             continue
+        field = config["field"]
         # temp fix for details
         if key == "details":
             try:
