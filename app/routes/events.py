@@ -1,10 +1,11 @@
 import json
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import Blueprint, Response, jsonify, request
 
 from app.models.events import Events
+from app.models.users import Users
 
 events_bp = Blueprint("events", __name__)
 
@@ -128,6 +129,10 @@ def validate_post_format(key, value):
         
 @events_bp.route("/events", methods=['GET', 'POST'])
 def list_events():
+
+    #----------------------------------------------------------
+    #-----------------------GET--------------------------------
+    #----------------------------------------------------------
     if request.method == 'GET':
         query = request.args.to_dict()
         try:
@@ -136,6 +141,11 @@ def list_events():
             return better_jsonify(filtered_response)
         except Exception as e:
             return jsonify({"error": f"Internal Error: {e}"}), 500
+
+
+    #----------------------------------------------------------
+    #------------------------POST------------------------------
+    #----------------------------------------------------------
 
     # Should only be for creating an event
     if request.method == 'POST':
@@ -153,6 +163,27 @@ def list_events():
                     return jsonify({"error": f"Error: {key} must be of type {EVENT_FIELDS[key]["type"]}"})
                 create_event[key] = safe_val
 
-        return better_jsonify(create_event, status=201)
+        try:
+            if Users.get_or_none(Users.id == create_event["user_id"]) is None:
+                return jsonify({"error": f"Error: No user with matching id {create_event["user_id"]}"})
+        except Exception as e:
+            return jsonify({"error": "Error: There was a problem during authentication"}), 400 # ..."authentication"
+            
+        try:
+            print(create_event)
+            Events.create(
+                url_id=create_event["url_id"],
+                user_id=create_event["user_id"],
+                event_type=create_event["event_type"],
+                timestamp=datetime.now(timezone.utc),
+                details=create_event["details"]
+            )
+    
+            return better_jsonify(create_event, status=201)
+            
+        except Exception as e:
+            return jsonify({"error": f"Internal Error: {e}"}), 500
+
+    
 
     return jsonify({""}), 500 # fallback not sure if this is needed
