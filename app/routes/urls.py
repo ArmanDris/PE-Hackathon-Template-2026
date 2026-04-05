@@ -339,9 +339,12 @@ def redirect_url(shortcode):
 
     r = get_redis()
     if r.exists(shortcode):
-        out = r.get(shortcode).decode()
-        r.close()
-        return redirect(out), 302
+        # The cache can be clearned between r.exists and r.get
+        out = r.get(shortcode)
+        if out is not None:
+            out = out.decode()
+            r.close()
+            return redirect(out), 302
 
     url = Urls.get_or_none(Urls.short_code == shortcode)
 
