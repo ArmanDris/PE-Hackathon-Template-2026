@@ -37,7 +37,7 @@ def setup_logging():
                 "class": "logging.FileHandler",
                 "filename": "./app/logging/logs/app.log",
                 "formatter": "json",
-                "level": "INFO",
+                "level": "DEBUG",
                 "filters": [ "request_filters" ]
             }
         },

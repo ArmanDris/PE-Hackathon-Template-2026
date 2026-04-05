@@ -69,9 +69,10 @@ def build_search_list(query_json):
     filters = []
     for key, value, in query_json.items():
         config = EVENT_FIELDS.get(key)
-        field = config["field"]
         if not config or value is None:
             continue
+        field = config["field"]
+
         #temp fix for details
         if key == "details":
             try:
@@ -191,8 +192,10 @@ def list_events():
 
     # Should only be for creating an event
     if request.method == 'POST':
-        
-        event_json = request.get_json()
+        try:
+            event_json = request.get_json()
+        except:
+            return jsonify({"error": "Error: Invalid json"}), 400
 
         if not event_json:
             return jsonify({"error": "Error: Invalid JSON"}), 400
