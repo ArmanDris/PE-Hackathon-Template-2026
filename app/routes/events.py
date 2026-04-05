@@ -121,10 +121,10 @@ def validate_post_format(key, value):
 
     elif EVENT_FIELDS[key]["type"] == "json":
         try:
-            value = json.dumps(value)
             if not isinstance(value, dict):
                 # Invalid format, must be json
                 return None
+            value = json.dumps(value)
             return value
         except ValueError:
             return None
