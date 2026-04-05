@@ -65,12 +65,21 @@ curl http://localhost:5000/health
 # 1. Create env file (if you do not already have one)
 cp .env.example .env
 
-# 2. Build and start Flask + PgBouncer + Postgres
-docker compose up --build
+# 2. Build and start multiple instances of web
+docker compose up --build --scale web=3
 
 # 3. Verify
 curl http://localhost:5000/health
 # → {"status":"ok"}
+```
+
+The production stack uses Nginx as a simple load balancer in front of multiple `web` containers.
+Change `--scale web=3` to any number you want.
+
+For development, use the dev override so only one `web` container runs and it is published directly:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
 
 Useful commands:

@@ -1,8 +1,8 @@
 services:
   web:
     ports:
-      - 5000:5000
       - 8089:8089 # For locust
+      - 5000:5000
     env_file:
       - .env
     volumes:
