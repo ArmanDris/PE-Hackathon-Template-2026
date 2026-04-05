@@ -5,6 +5,8 @@ on: [push]
 jobs:
   integrate:
     runs-on: ubuntu-latest
+    env:
+      REDIS_HOST: localhost
 
     steps:
       - uses: actions/checkout@v4
