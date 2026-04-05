@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logs</title>
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: monospace;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            margin-bottom: 15px;
+        }
+
+        input, select {
+            padding: 5px;
+            margin-right: 5px;
+            background: #222;
+            border: 1px solid #333;
+            color: #eee;
+        }
+
+        button {
+            padding: 5px 10px;
+            background: #4CAF50;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .log {
+            border-bottom: 1px solid #333;
+            padding: 8px;
+            white-space: pre-wrap;
+        }
+
+        .ERROR { color: #ff6b6b; }
+        .WARNING { color: #f7b733; }
+        .INFO { color: #4ecdc4; }
+        .DEBUG { color: #aaa; }
+
+        .meta {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <h1>Logs</h1>
+        <a href="/admin/logout">Logout</a>
+    </div>
+
+    <div class="controls">
+        <input id="search" placeholder="Search...">
+        <select id="level">
+            <option value="">All</option>
+            <option value="ERROR">ERROR</option>
+            <option value="WARNING">WARNING</option>
+            <option value="INFO">INFO</option>
+            <option value="DEBUG">DEBUG</option>
+        </select>
+        <button onclick="loadLogs()">Load</button>
+    </div>
+
+    <div id="logs"></div>
+
+    <script>
+    async function loadLogs() {
+        const search = document.getElementById("search").value;
+        const level = document.getElementById("level").value;
+
+        const res = await fetch(`/admin/logs?search=${search}&level=${level}`);
+        const data = await res.json();
+
+        const container = document.getElementById("logs");
+        container.innerHTML = "";
+
+        data.forEach(log => {
+            const div = document.createElement("div");
+            div.className = "log " + (log.levelname || "");
+
+            div.innerHTML = `
+                <div><strong>${log.levelname || ""}</strong> ${log.message || ""}</div>
+                <div class="meta">
+                    ${log.name || ""} 
+                    ${log.path || ""} 
+                    ${log.method || ""}
+                </div>
+            `;
+
+            container.appendChild(div);
+        });
+    }
+
+    // auto-load on page open
+    loadLogs();
+
+    // optional auto-refresh
+    setInterval(loadLogs, 5000);
+    </script>
+
+</body>
+</html>

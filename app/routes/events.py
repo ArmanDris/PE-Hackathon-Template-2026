@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 import json
 from datetime import datetime, timezone
 
@@ -52,6 +56,7 @@ def prepare_values(event_val):
         try:
             # date is already close to the format but missing 'T' in the center
             event_val["timestamp"] = datetime.isoformat(event_val["timestamp"])
+            # not really worth it to log
         except:
             event_val["timestamp"] = None
 
@@ -67,17 +72,20 @@ def build_search_list(query_json):
         value,
     ) in query_json.items():
         config = EVENT_FIELDS.get(key)
-        field = config["field"]
         if not config or value is None:
             continue
         # temp fix for details
         if key == "details":
             try:
+                logger.warning("Someone tried to use details as a query parameter. This has a high chance of failing. No server risk")
                 filters.append(field.contains(json.dumps(value)))
             except Exception:
                 continue
         else:
             filters.append(field == value)
+
+    logger.debug("Events search filters successfully processed",
+                 extra={"filters:": filters})
 
     return filters
 
@@ -95,6 +103,8 @@ def get_events_filtered(query_param):
     # gets the json value from selected query
     query = query.dicts()
 
+    logger.debug("Event query results(limited 2)")
+
     cleaned_result = [prepare_values(r) for r in query]
     return cleaned_result
 
@@ -104,6 +114,9 @@ def get_events_filtered(query_param):
 # --------------------------------------------------------------------
 def validate_post_format(key, value):
 
+    logger.debug("Event POST value to check:",
+                 extra={"Key:": key, "Value:": value})
+    
     if EVENT_FIELDS[key]["type"] == int:
         try:
             return int(value)
@@ -130,26 +143,49 @@ def validate_post_format(key, value):
             return None
 
     return None
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
 
 
-# --------------------------------------------------------------------
-# --------------------------------------------------------------------
-# --------------------------------------------------------------------
 
-
-@events_bp.route("/events", methods=["GET", "POST"])
+@events_bp.route("/events", methods=['GET', 'POST'])
 def list_events():
 
-    # ----------------------------------------------------------
-    # -----------------------GET--------------------------------
-    # ----------------------------------------------------------
-    if request.method == "GET":
+    logger.info(
+        "Incoming request",
+        extra={
+            "method": request.method,
+            "path": request.path,
+            "query_params": request.args.to_dict()
+            }
+    )
+
+
+    #----------------------------------------------------------
+    #-----------------------GET--------------------------------
+    #----------------------------------------------------------
+    if request.method == 'GET':
+        
         query = request.args.to_dict()
         try:
             filtered_response = get_events_filtered(query)
 
+            logging.info(
+                "Events fetched succesfully",
+                extra={
+                    "results_count": len(filtered_response)        
+                    }
+            )
+
             return better_jsonify(filtered_response)
         except Exception as e:
+            logger.exception(
+                "Failed to fetch events",
+                extra={
+                    "query_params": query
+                }
+            )
             return jsonify({"error": f"Internal Error: {e}"}), 500
 
     # ----------------------------------------------------------
@@ -210,9 +246,24 @@ def list_events():
                 details=create_event["details"],
             )
 
+            logger.info("Event succusfully create",
+                        extra={
+                            "url_id": create_event["url_id"],
+                            "user_id": create_event["user_id"],
+                            "even_type": create_event["event_type"],
+                            "timestamp": datetime.now(timezone.utc),
+                            "details": create_event["details"]
+                        })
+    
             return better_jsonify(create_event, status=201)
 
         except Exception as e:
+            logger.exception(
+                "Failed to create event",
+                extra={"body": event_json}
+            )
             return jsonify({"error": f"Internal Error: {e}"}), 500
 
-    return jsonify({""}), 500  # fallback not sure if this is needed
+    
+    logger.info("Reached end of /event with no response, serving 500")
+    return jsonify({""}), 500 # fallback not sure if this is needed

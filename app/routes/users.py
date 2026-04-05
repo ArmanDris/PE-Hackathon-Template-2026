@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger()
+
 from flask import Blueprint, jsonify, request
 from app.models.users import Users
 from typing import Dict
@@ -38,6 +41,12 @@ def users_bulk():
             count += 1
     except Exception as e:
         return jsonify({"error": f"Failed to parse CSV: {e}"}), 400
+
+
+    logger.info("Successfully loaded csv",
+                extra={"count:": count})
+
+    
     return jsonify({"count": count}), 200
 
 def validate_user(user: Dict) -> bool:
@@ -67,6 +76,9 @@ def validate_user(user: Dict) -> bool:
             return False
     elif not isinstance(created_at, datetime):
         return False
+
+    logger.debug("User validated",
+                 extra={"user:": user})
 
     return True
 
@@ -119,8 +131,16 @@ def list_users():
                 "email": u.email,
                 "created_at": u.created_at.isoformat()
             })
+
+        logger.info("Succesfully returned user list",
+                    extra={"user count:": len(users_list)})
+
+            
         return jsonify(users_list), 200
     except Exception as e:
+        logger.exception("Internal Error",
+                         extra={"Exception:": e})
+    
         return jsonify({"error": f"Internal Error: {e}"}), 500
 
 # GET /users/<id> endpoint
@@ -139,8 +159,19 @@ def get_user_by_id(id: int):
             "email": user.email,
             "created_at": user.created_at.isoformat()
         }
+
+        logger.info("Userinfo fetched succesfully",
+                    extra={
+                        "id:": result["id"],
+                        "username": result["username"]})
+        
         return jsonify(result), 200
     except Exception as e:
+        logger.exception("Internal Error",
+                         extra={
+                             "Exception:": e,
+                             "id": id
+                         })
         return jsonify({"error": f"Internal Error: {e}"}), 500
     
 # POST /users endpoint
@@ -152,26 +183,33 @@ def create_user():
     # Parse JSON body; use silent to avoid 415 on missing content-type
     data = request.get_json(silent=True)
     if data is None:
+        logger.debug("User creation failed. Json data required")
         return jsonify({"error": "Error: Json data required"}), 400
 
     # Disallow client-specified id or created_at
     if "id" in data:
+        logger.debug("Error: 'id' is not allowed when creating user")
         return jsonify({"error": "Error: 'id' is not allowed"}), 400
     if "created_at" in data:
+        logger.debug("Error: 'created_at' is not allowed when creating user")
         return jsonify({"error": "Error: 'created_at' is not allowed"}), 400
 
     # Required fields
     username = data.get("username")
     email = data.get("email")
     if username is None:
+        logger.debug("Error: Username is required when creating user")
         return jsonify({"error": "Error: username is required"}), 400
     if email is None:
+        logger.debug("Error: Email is required whn creaing user", extra={"username:": username})
         return jsonify({"error": "Error: email is required"}), 400
 
     # Validate types
     if not isinstance(username, str) or not username.strip():
+        logger.debug("Error: Username must be a non-empty string")
         return jsonify({"error": "Error: username must be a non-empty string"}), 400
     if not isinstance(email, str) or not email.strip():
+        logger.debug("Error: Username must be a non-empty string")
         return jsonify({"error": "Error: email must be a non-empty string"}), 400
 
     try:
@@ -185,8 +223,17 @@ def create_user():
             "email": user.email,
             "created_at": user.created_at.isoformat()
         }
+
+        logger.info("User succesfully created",
+                    extra={
+                        "id:": result["id"],
+                        "username:": result["username"]
+                    })
+        
         return jsonify(result), 201
     except Exception as e:
+        logger.exception("Internal Error",
+                         extra={"Exception:": e})
         return jsonify({"error": f"Internal Error: {e}"}), 500
     
 # PUT /users/<id> endpoint
@@ -198,31 +245,38 @@ def update_user(id: int):
     try:
         user = Users.get_or_none(Users.id == id)
         if user is None:
+            logger.debug("Error user with this id does not exit", extra={"id:": id})
             return jsonify({"error": f"Error: user with id {id} does not exist"}), 404
         # Parse JSON body
         data = request.get_json(silent=True)
         if data is None:
+            logger.debug("Error json data is required")
             return jsonify({"error": "Error: Json data required"}), 400
 
         # Disallow id or created_at
         if "id" in data:
+            logger.debug("Error id is not allowed when updating user")
             return jsonify({"error": "Error: 'id' is not allowed"}), 400
         if "created_at" in data:
+            logger.debug("Error created)at it not allowed", extra={"id:": 1})
             return jsonify({"error": "Error: 'created_at' is not allowed"}), 400
 
         # Ensure at least one updatable field provided
         if "username" not in data and "email" not in data:
+            logger.debug("Error updating user requires at least username or password")
             return jsonify({"error": "Error: username or email required"}), 400
 
         # Validate and apply updates
         if "username" in data:
             username = data.get("username")
             if not isinstance(username, str) or not username.strip():
+                logger.debug("Error username provided was malformed, must be non-empty string", extra={"username:": username})
                 return jsonify({"error": "Error: username must be a non-empty string"}), 400
             user.username = username.strip()
         if "email" in data:
             email = data.get("email")
             if not isinstance(email, str) or not email.strip():
+                logger.debug("Error email provided was malformed, must be a non-empty string", extra={"email:": email})
                 return jsonify({"error": "Error: email must be a non-empty string"}), 400
             user.email = email.strip()
 
@@ -233,8 +287,17 @@ def update_user(id: int):
             "email": user.email,
             "created_at": user.created_at.isoformat()
         }
+
+        logger.info("User updated succesfully",
+                    extra={
+                        "id:": user.id,
+                        "username": user.username,
+                        "email": user.email
+                    })
+        
         return jsonify(result), 200
     except Exception as e:
+        logger.exception("Internal Error", extra={"Exception:": e})
         return jsonify({"error": f"Internal Error: {e}"}), 500
     
 @users_bp.delete("/users/<int:id>")
@@ -245,6 +308,7 @@ def delete_user(id: int):
     try:
         user = Users.get_or_none(Users.id == id)
         if user is None:
+            logger.debug("Error cannot delete user, no user with id", extra={"id:": id})
             return jsonify({"error": f"Error: user with id {id} does not exist"}), 404
         # prepare response before deletion
         result = {
@@ -253,7 +317,16 @@ def delete_user(id: int):
             "email": user.email,
             "created_at": user.created_at.isoformat()
         }
+
+        logger.info("User succesfully deleted",
+                    extra={
+                        "id:": user.id,
+                        "username:": user.username
+                    })
+        
+        
         user.delete_instance()
         return jsonify(result), 200
     except Exception as e:
+        logger.exception("Internal Error", extra={"Exception": e})
         return jsonify({"error": f"Internal Error: {e}"}), 500
