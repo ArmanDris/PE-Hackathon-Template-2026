@@ -65,3 +65,96 @@
 {"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:47:20] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
 {"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:47:22] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
 {"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:47:24] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://10.0.0.60:5000", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Restarting with stat", "method": null, "path": null, "user_id": null}
+{"levelname": "WARNING", "name": "werkzeug", "message": " * Debugger is active!", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Debugger PIN: 286-969-027", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:00] \"GET /admin/auth HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "DEBUG", "name": "root", "message": "Authentication in progress", "submitted": "c98095ef5ff83fc9391b152165145c98c0f4a6b095746d0223741eea39b237c2", "saved": "c98095ef5ff83fc9391b152165145c98c0f4a6b095746d0223741eea39b237c2", "method": "POST", "path": "/admin/auth", "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:04] \"\u001b[32mPOST /admin/auth HTTP/1.1\u001b[0m\" 302 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:04] \"GET /admin HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:04] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:07] \"GET /admin/logs?search=&level=DEBUG HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:09] \"GET /admin/logs?search=&level=DEBUG HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:09] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:11] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:14] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:19] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:24] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:29] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:34] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:39] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:44] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:49] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:54] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:50:59] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:51:04] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:51:09] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:51:11] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:51:14] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:51:19] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:51:24] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:51:29] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://10.0.0.60:5000", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Restarting with stat", "method": null, "path": null, "user_id": null}
+{"levelname": "WARNING", "name": "werkzeug", "message": " * Debugger is active!", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Debugger PIN: 286-969-027", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:40] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:40] \"GET /admin HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:40] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:44] \"GET /metrics HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:45] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:47] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:47] \"\u001b[31m\u001b[1mPOST /simulate HTTP/1.1\u001b[0m\" 405 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:49] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:50] \"\u001b[31m\u001b[1mPOST /simulate HTTP/1.1\u001b[0m\" 405 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:51] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:53] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:54] \"\u001b[31m\u001b[1mPOST /simulate HTTP/1.1\u001b[0m\" 405 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:54] \"\u001b[31m\u001b[1mPOST /simulate HTTP/1.1\u001b[0m\" 405 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:55] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:57] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:59] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:52:59] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:53:00] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:53:02] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:53:02] \"GET /metrics HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:53:02] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:53:03] \"\u001b[31m\u001b[1mPOST /simulate HTTP/1.1\u001b[0m\" 405 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:53:04] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:53:06] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://10.0.0.60:5000", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Restarting with stat", "method": null, "path": null, "user_id": null}
+{"levelname": "WARNING", "name": "werkzeug", "message": " * Debugger is active!", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Debugger PIN: 286-969-027", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "app.routes.events", "message": "Incoming request", "method": "GET", "path": "/events", "query_params": {}, "user_id": null}
+{"levelname": "DEBUG", "name": "app.routes.events", "message": "Events search filters successfully processed", "filters:": [], "method": "GET", "path": "/events", "user_id": null}
+{"levelname": "DEBUG", "name": "app.routes.events", "message": "Event query results(limited 2)", "method": "GET", "path": "/events", "user_id": null}
+{"levelname": "INFO", "name": "root", "message": "Events fetched succesfully", "results_count": 3424, "method": "GET", "path": "/events", "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:55:25] \"GET /events HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:55:46] \"GET /admin/auth HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "DEBUG", "name": "root", "message": "Authentication in progress", "submitted": "c98095ef5ff83fc9391b152165145c98c0f4a6b095746d0223741eea39b237c2", "saved": "c98095ef5ff83fc9391b152165145c98c0f4a6b095746d0223741eea39b237c2", "method": "POST", "path": "/admin/auth", "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:55:52] \"\u001b[32mPOST /admin/auth HTTP/1.1\u001b[0m\" 302 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:55:52] \"GET /admin HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:55:52] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:55:57] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:02] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:07] \"GET /admin/logs?search=&level= HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:08] \"GET /admin/logs HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:35] \"GET /metrics HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:35] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:37] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:39] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:41] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:43] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:45] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:47] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:49] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:51] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:53] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:55] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:57] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [05/Apr/2026 02:56:59] \"GET /metrics-json HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}

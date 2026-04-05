@@ -31,7 +31,7 @@
         .bar {
             height: 100%;
             background: #4caf50;
-            transition: width 0.5s ease;
+            transition: width 0.5s ease, background-color 0.5s ease;
         }
 
         .admin-controls {
@@ -84,54 +84,56 @@
     <div class="admin-controls">
         <button onclick="simulate('cpu')">Simulate CPU Spike</button>
         <button onclick="simulate('memory')">Simulate Memory Spike</button>
+        <button onclick="simulate('disk')">Simulate Disk Spike</button>
     </div>
     {% endif %}
 
-    <!-- Placeholder for JS; will add dynamic updating later -->
     <script>
-    async function fetchMetrics() {
-        try {
-            const response = await fetch("/metrics-json");
-            const data = await response.json();
+        async function fetchMetrics() {
+            try {
+                const response = await fetch("/metrics-json");
+                const data = await response.json();
 
-            // Update CPU
-            const cpuBar = document.getElementById("cpu-bar");
-            const cpuText = document.getElementById("cpu-text");
-            cpuBar.style.width = data.cpu_percent + "%";
-            cpuText.innerText = data.cpu_percent + "%";
-            cpuBar.style.backgroundColor = data.cpu_percent > 80 ? "#f44336" : "#4caf50";
+                // CPU
+                const cpuBar = document.getElementById("cpu-bar");
+                const cpuText = document.getElementById("cpu-text");
+                cpuBar.style.width = data.cpu_percent + "%";
+                cpuText.innerText = data.cpu_percent + "%";
+                cpuBar.style.backgroundColor = data.cpu_percent > 80 ? "#f44336" : "#4caf50";
 
-            // Update Memory
-            const memBar = document.getElementById("mem-bar");
-            const memText = document.getElementById("mem-text");
-            memBar.style.width = data.memory_percent + "%";
-            memText.innerText = `${data.memory_used.toFixed(1)} / ${data.memory_total.toFixed(1)} GB (${data.memory_percent}%)`;
-            memBar.style.backgroundColor = data.memory_percent > 80 ? "#f44336" : "#4caf50";
+                // Memory
+                const memBar = document.getElementById("mem-bar");
+                const memText = document.getElementById("mem-text");
+                memBar.style.width = data.memory_percent + "%";
+                memText.innerText = `${data.memory_used.toFixed(1)} / ${data.memory_total.toFixed(1)} GB (${data.memory_percent}%)`;
+                memBar.style.backgroundColor = data.memory_percent > 80 ? "#f44336" : "#4caf50";
 
-            // Update Disk
-            const diskBar = document.getElementById("disk-bar");
-            const diskText = document.getElementById("disk-text");
-            diskBar.style.width = data.disk_percent + "%";
-            diskText.innerText = `${data.disk_used.toFixed(1)} / ${data.disk_total.toFixed(1)} GB (${data.disk_percent}%)`;
-            diskBar.style.backgroundColor = data.disk_percent > 80 ? "#f44336" : "#4caf50";
-        } catch (err) {
-            console.error("Failed to fetch metrics:", err);
+                // Disk
+                const diskBar = document.getElementById("disk-bar");
+                const diskText = document.getElementById("disk-text");
+                diskBar.style.width = data.disk_percent + "%";
+                diskText.innerText = `${data.disk_used.toFixed(1)} / ${data.disk_total.toFixed(1)} GB (${data.disk_percent}%)`;
+                diskBar.style.backgroundColor = data.disk_percent > 80 ? "#f44336" : "#4caf50";
+            } catch (err) {
+                console.error("Failed to fetch metrics:", err);
+            }
         }
-    }
 
-    // Poll every 2 seconds
-    setInterval(fetchMetrics, 2000);
-
-
-    
-        // JS functions will go here
         async function simulate(metric) {
-            await fetch("/simulate", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({metric: metric, value: 99})
-            });
+            try {
+                await fetch("/simulate", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({metric: metric, value: 99})
+                });
+            } catch (err) {
+                console.error("Failed to simulate spike:", err);
+            }
         }
+
+        // Start polling every 2 seconds
+        setInterval(fetchMetrics, 2000);
+        fetchMetrics(); // fetch immediately on load
     </script>
 </body>
 </html>
