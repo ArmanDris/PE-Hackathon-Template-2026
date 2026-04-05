@@ -34,7 +34,7 @@ def better_jsonify(jval, mimetype="application/json", status=200, indent=2):
                 status=status
             )
 
-# This helper is designed the handle all the misformatting that
+# This function is designed the handle all the misformatting that
 # might be done while trying to parse certain values from the
 # Events class
 # Keys processed:
@@ -58,6 +58,8 @@ def prepare_values(event_val):
 
     return event_val # The event with processed values or the unchanged if none of the keys needed it
 
+# Constructs list of filteres specified by qurey parameters
+# to be used in get_events_filtered
 def build_search_list(query_json):
     filters = []
     for key, value, in query_json.items():
@@ -152,6 +154,9 @@ def list_events():
         
         event_json = request.get_json()
 
+        if not event_json:
+            return jsonify({"error": "Error: Invalid JSON"}), 400
+
         create_event = {}
         for key in CREATE_FIELDS.keys():
             # Checks if post data is missing any 
@@ -160,13 +165,13 @@ def list_events():
             else:
                 safe_val = validate_post_format(key, event_json[key]) # -----POST SANITIZATION--------
                 if safe_val is None:
-                    return jsonify({"error": f"Error: {key} must be of type {EVENT_FIELDS[key]["type"]}"})
+                    return jsonify({"error": f"Error: {key} must be of type {EVENT_FIELDS[key]['type']}"})
                 create_event[key] = safe_val
 
         try:
             # Verify user actually exists
             if Users.get_or_none(Users.id == create_event["user_id"]) is None:
-                return jsonify({"error": f"Error: No user with matching id {create_event["user_id"]}"})
+                return jsonify({"error": f"Error: No user with matching id {create_event['user_id']}"})
             
         except Exception as e:
             return jsonify({"error": "Error: There was a problem during authentication"}), 400 # ..."authentication"

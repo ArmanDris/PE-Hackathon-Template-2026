@@ -8,6 +8,7 @@ dependencies = [
     "gevent>=25.9.1",
     "gunicorn>=25.3.0",
     "locust>=2.43.4",
+    "logging>=0.4.9.6",
     "peewee>=3.17",
     "psycopg2-binary>=2.9",
     "pytest>=9.0.2",
