@@ -34,11 +34,13 @@ def init_db(app=None):
 
 
 def get_redis():
-    return redis.Redis(
+    r = redis.Redis(
         host=os.environ.get("REDIS_HOST", "redis"),
         port=int(os.environ.get("REDIS_PORT", 6379)),
         decode_responses=False,
     )
+
+    return r
 
 
 def save_obj_to_redis(r, key, obj):
