@@ -3,6 +3,7 @@ from app.models.users import Users
 from typing import Dict
 from datetime import datetime
 import io, csv
+from peewee import fn
 
 users_bp = Blueprint("users", __name__)
 
@@ -174,7 +175,10 @@ def create_user():
         return jsonify({"error": "Error: email must be a non-empty string"}), 400
 
     try:
-        user = Users.create(username=username.strip(), email=email.strip())
+        # Generate a unique id: max existing id + 1
+        max_id = Users.select(fn.MAX(Users.id)).scalar() or 0
+        new_id = max_id + 1
+        user = Users.create(id=new_id, username=username.strip(), email=email.strip())
         result = {
             "id": user.id,
             "username": user.username,
@@ -229,6 +233,27 @@ def update_user(id: int):
             "email": user.email,
             "created_at": user.created_at.isoformat()
         }
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": f"Internal Error: {e}"}), 500
+    
+@users_bp.delete("/users/<int:id>")
+def delete_user(id: int):
+    """
+    Delete an existing user by ID.
+    """
+    try:
+        user = Users.get_or_none(Users.id == id)
+        if user is None:
+            return jsonify({"error": f"Error: user with id {id} does not exist"}), 404
+        # prepare response before deletion
+        result = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "created_at": user.created_at.isoformat()
+        }
+        user.delete_instance()
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": f"Internal Error: {e}"}), 500
