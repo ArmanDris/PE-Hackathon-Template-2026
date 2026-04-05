@@ -3,7 +3,17 @@ from logging.config import dictConfig
 def setup_logging():
     dictConfig({
         "version": 1,
+
+        
         "disable_existing_loggers": False,
+        "loggers": {
+            "peewee": {
+                "level": "WARNING"
+            },
+            "wekzeug": {
+                "level": "WARNING"
+            }
+        },
 
         "formatters": {
             "json": {
@@ -19,14 +29,22 @@ def setup_logging():
             "console": {
                 "class": "logging.StreamHandler",
                 "formatter": "simple",
-                "level": "DEBUG"
+                "level": "DEBUG",
+                "filters": [ "request_filters" ]
                 
             },
             "file": {
                 "class": "logging.FileHandler",
-                "filename": "app.log",
+                "filename": "./app/logging/logs/app.log",
                 "formatter": "json",
-                "level": "INFO"
+                "level": "INFO",
+                "filters": [ "request_filters" ]
+            }
+        },
+
+        "filters": {
+            "request_filters": {
+                "()": "app.logging.filters.logging_filters.RequestFilter"
             }
         },
 

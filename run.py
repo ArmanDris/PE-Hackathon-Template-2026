@@ -1,5 +1,8 @@
 import os
 
+from app.logging_config import setup_logging
+setup_logging()
+
 from app import create_app
 
 app = create_app()
