@@ -6,7 +6,7 @@ A minimal hackathon starter template. You get the scaffolding and database wirin
 
 ## **Important**
 
-You need to work with around the seed files that you can find in [MLH PE Hackathon](https://mlh-pe-hackathon.com) platform. This will help you build the schema for the database and have some data to do some testing and submit your project for judging. If you need help with this, reach out on Discord or on the Q&A tab on the platform.
+Our project was based on seed files provided by [MLH PE Hackathon (https://mlh-pe-hackathon.com) platform. It was the basis for the schema of the database, and provided some intial data.
 
 ## Prerequisites
 
@@ -40,12 +40,12 @@ You need to work with around the seed files that you can find in [MLH PE Hackath
 
 ```bash
 # 1. Clone the repo
-git clone <repo-url> && cd mlh-pe-hackathon
+git clone [<repo-url>](https://github.com/ArmanDris/PE-Hackathon-Template-2026.git) && cd PE-Hackathon-Template-2026.git
 
 # 2. Install dependencies
 uv sync
 
-# 3. Create the database
+# 3. Create the database(**As postgres user*)
 createdb hackathon_db
 
 # 4. Configure environment
@@ -113,7 +113,13 @@ mlh-pe-hackathon/
 │   ├── models/
 │   │   └── __init__.py      # Import your models here
 │   └── routes/
-│       └── __init__.py      # register_routes() — add blueprints here
+│   |   └── __init__.py      # register_routes() — add blueprints here
+|   └── templates            # Add any html files to render_template(index.html)
+|   └── statc                # Css/JavaScript files
+|   └── logging
+|       └── logs             # Path for app.log
+|       └── auth             # Where credential hashes are stored(ONLY FOR TESTING)
+|       └── filter           # Add any custom filters for python.logging
 ├── .env.example             # DB connection template
 ├── .gitignore               # Python + uv gitignore
 ├── .python-version          # Pin Python version for uv
@@ -123,6 +129,7 @@ mlh-pe-hackathon/
 ```
 
 ## How to Add a Model
+This will guide you through adding the 'product' model, this process should be repeated for any models you wish to use in your app
 
 1. Create a file in `app/models/`, e.g. `app/models/product.py`:
 
