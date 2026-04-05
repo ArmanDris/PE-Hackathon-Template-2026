@@ -23,3 +23,48 @@
 {"levelname": "INFO", "name": "werkzeug", "message": " * Restarting with stat", "method": null, "path": null, "user_id": null}
 {"levelname": "WARNING", "name": "werkzeug", "message": " * Debugger is active!", "method": null, "path": null, "user_id": null}
 {"levelname": "INFO", "name": "werkzeug", "message": " * Debugger PIN: 286-969-027", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://10.0.0.60:5000", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Restarting with stat", "method": null, "path": null, "user_id": null}
+{"levelname": "WARNING", "name": "werkzeug", "message": " * Debugger is active!", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Debugger PIN: 286-969-027", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://10.0.0.60:5000", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Restarting with stat", "method": null, "path": null, "user_id": null}
+{"levelname": "WARNING", "name": "werkzeug", "message": " * Debugger is active!", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Debugger PIN: 286-969-027", "method": null, "path": null, "user_id": null}
+{"levelname": "ERROR", "name": "root", "message": "Internal Error", "exc_info": "Traceback (most recent call last):\n  File \"/home/rarch/Desktop/hackathon/mlh_pe/PE-Hackathon-Template-2026/app/routes/users.py\", line 136, in list_users\n    extra={\"user count:\": len(user_list)})\n                              ^^^^^^^^^\nNameError: name 'user_list' is not defined. Did you mean: 'users_list'?", "Exception:": "NameError: name 'user_list' is not defined", "method": "GET", "path": "/users", "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [04/Apr/2026 22:54:48] \"\u001b[35m\u001b[1mGET /users?=1 HTTP/1.1\u001b[0m\" 500 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://10.0.0.60:5000", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Restarting with stat", "method": null, "path": null, "user_id": null}
+{"levelname": "WARNING", "name": "werkzeug", "message": " * Debugger is active!", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Debugger PIN: 286-969-027", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "root", "message": "Succesfully returned user list", "user count:": 400, "method": "GET", "path": "/users", "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [04/Apr/2026 22:55:13] \"GET /users?=1 HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://10.0.0.60:5000", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Restarting with stat", "method": null, "path": null, "user_id": null}
+{"levelname": "WARNING", "name": "werkzeug", "message": " * Debugger is active!", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Debugger PIN: 286-969-027", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "root", "message": "Succesfully returned user list", "user count:": 400, "method": "GET", "path": "/users", "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [04/Apr/2026 22:58:27] \"GET /users?=1 HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "root", "message": "Userinfo fetched succesfully", "id:": 1, "username": "cobaltvalley53", "method": "GET", "path": "/users/1", "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [04/Apr/2026 22:58:31] \"GET /users/1 HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://10.0.0.60:5000", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Restarting with stat", "method": null, "path": null, "user_id": null}
+{"levelname": "WARNING", "name": "werkzeug", "message": " * Debugger is active!", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Debugger PIN: 286-969-027", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "root", "message": "User succesfully created", "id:": 401, "username:": "testuser_create", "method": "POST", "path": "/users", "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [04/Apr/2026 23:08:08] \"\u001b[35m\u001b[1mPOST /users HTTP/1.1\u001b[0m\" 201 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on all addresses (0.0.0.0)\n * Running on http://127.0.0.1:5000\n * Running on http://10.0.0.60:5000", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "\u001b[33mPress CTRL+C to quit\u001b[0m", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Restarting with stat", "method": null, "path": null, "user_id": null}
+{"levelname": "WARNING", "name": "werkzeug", "message": " * Debugger is active!", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": " * Debugger PIN: 286-969-027", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [04/Apr/2026 23:25:19] \"\u001b[31m\u001b[1mPUT /users/1 HTTP/1.1\u001b[0m\" 400 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [04/Apr/2026 23:25:48] \"\u001b[31m\u001b[1mPUT /users/1 HTTP/1.1\u001b[0m\" 400 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [04/Apr/2026 23:26:36] \"\u001b[31m\u001b[1mPOST /users HTTP/1.1\u001b[0m\" 400 -", "method": null, "path": null, "user_id": null}
+{"levelname": "INFO", "name": "root", "message": "User updated succesfully", "id:": 1, "username": "updated_username", "email": "cobaltvalley53@seeded.app", "method": "PUT", "path": "/users/1", "user_id": null}
+{"levelname": "INFO", "name": "werkzeug", "message": "127.0.0.1 - - [04/Apr/2026 23:27:59] \"PUT /users/1 HTTP/1.1\" 200 -", "method": null, "path": null, "user_id": null}
