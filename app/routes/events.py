@@ -3,7 +3,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 import json
-
 from datetime import datetime, timezone
 
 from flask import Blueprint, Response, jsonify, request
@@ -26,17 +25,17 @@ CREATE_FIELDS = {
     "url_id": Events.url_id,
     "user_id": Events.user_id,
     "event_type": Events.event_type,
-    "details": Events.details
+    "details": Events.details,
 }
+
 
 # This perserves the order of each item, jsonify might be able to do this
 # I just dont know how :()
 def better_jsonify(jval, mimetype="application/json", status=200, indent=2):
     return Response(
-                json.dumps(jval, indent=indent, default=str),
-                mimetype=mimetype,
-                status=status
-            )
+        json.dumps(jval, indent=indent, default=str), mimetype=mimetype, status=status
+    )
+
 
 # This function is designed the handle all the misformatting that
 # might be done while trying to parse certain values from the
@@ -44,7 +43,7 @@ def better_jsonify(jval, mimetype="application/json", status=200, indent=2):
 # Keys processed:
 # "details", "timestamp"
 def prepare_values(event_val):
-    
+
     # details is a string, so it needs to be prased into a json
     if event_val.get("details"):
         try:
@@ -61,19 +60,21 @@ def prepare_values(event_val):
         except:
             event_val["timestamp"] = None
 
-    return event_val # The event with processed values or the unchanged if none of the keys needed it
+    return event_val  # The event with processed values or the unchanged if none of the keys needed it
+
 
 # Constructs list of filteres specified by qurey parameters
 # to be used in get_events_filtered
 def build_search_list(query_json):
     filters = []
-    for key, value, in query_json.items():
+    for (
+        key,
+        value,
+    ) in query_json.items():
         config = EVENT_FIELDS.get(key)
         if not config or value is None:
             continue
-        field = config["field"]
-
-        #temp fix for details
+        # temp fix for details
         if key == "details":
             try:
                 logger.warning("Someone tried to use details as a query parameter. This has a high chance of failing. No server risk")
@@ -88,10 +89,11 @@ def build_search_list(query_json):
 
     return filters
 
+
 # Will filter the Events based on query param, if none are provided it will return the whole list
 def get_events_filtered(query_param):
     filters = build_search_list(query_param)
-         
+
     query = Events.select()
 
     # applies the fitler to query
@@ -107,9 +109,9 @@ def get_events_filtered(query_param):
     return cleaned_result
 
 
-#--------------------------------------------------------------------
-#-------------------------POST SANITIZATION-------------------------
-#--------------------------------------------------------------------
+# --------------------------------------------------------------------
+# -------------------------POST SANITIZATION-------------------------
+# --------------------------------------------------------------------
 def validate_post_format(key, value):
 
     logger.debug("Event POST value to check:",
@@ -121,24 +123,25 @@ def validate_post_format(key, value):
         except ValueError:
             return None
 
-        
     elif EVENT_FIELDS[key]["type"] == str:
         return value
 
-        
     elif EVENT_FIELDS[key]["type"] == "datetime":
         try:
             return datetime.fromisoformat(value)
         except ValueError:
             return None
 
-        
     elif EVENT_FIELDS[key]["type"] == "json":
         try:
-            return json.dumps(value)
+            if not isinstance(value, dict):
+                # Invalid format, must be json
+                return None
+            value = json.dumps(value)
+            return value
         except ValueError:
             return None
-        
+
     return None
 #--------------------------------------------------------------------
 #--------------------------------------------------------------------
@@ -185,47 +188,62 @@ def list_events():
             )
             return jsonify({"error": f"Internal Error: {e}"}), 500
 
-
-    #----------------------------------------------------------
-    #------------------------POST------------------------------
-    #----------------------------------------------------------
+    # ----------------------------------------------------------
+    # ------------------------POST------------------------------
+    # ----------------------------------------------------------
 
     # Should only be for creating an event
-    if request.method == 'POST':
-        try:
-            event_json = request.get_json()
-        except:
-            return jsonify({"error": "Error: Invalid json"}), 400
+    if request.method == "POST":
+
+        event_json = request.get_json()
 
         if not event_json:
             return jsonify({"error": "Error: Invalid JSON"}), 400
 
         create_event = {}
         for key in CREATE_FIELDS.keys():
-            # Checks if post data is missing any 
+            # Checks if post data is missing any
             if key not in event_json.keys():
-                return jsonify({"error": f"Error: {key} is required when creating an event"}), 400
+                return (
+                    jsonify(
+                        {"error": f"Error: {key} is required when creating an event"}
+                    ),
+                    400,
+                )
             else:
-                safe_val = validate_post_format(key, event_json[key]) # -----POST SANITIZATION--------
+                safe_val = validate_post_format(
+                    key, event_json[key]
+                )  # -----POST SANITIZATION--------
                 if safe_val is None:
-                    return jsonify({"error": f"Error: {key} must be of type {EVENT_FIELDS[key]['type']}"})
+                    return jsonify(
+                        {
+                            "error": f"Error: {key} must be of type {EVENT_FIELDS[key]['type']}"
+                        }
+                    )
                 create_event[key] = safe_val
 
         try:
             # Verify user actually exists
             if Users.get_or_none(Users.id == create_event["user_id"]) is None:
-                return jsonify({"error": f"Error: No user with matching id {create_event['user_id']}"})
-            
+                return jsonify(
+                    {
+                        "error": f"Error: No user with matching id {create_event['user_id']}"
+                    }
+                )
+
         except Exception as e:
-            return jsonify({"error": "Error: There was a problem during authentication"}), 400 # ..."authentication"
-            
+            return (
+                jsonify({"error": "Error: There was a problem during authentication"}),
+                400,
+            )  # ..."authentication"
+
         try:
             Events.create(
                 url_id=create_event["url_id"],
                 user_id=create_event["user_id"],
                 event_type=create_event["event_type"],
                 timestamp=datetime.now(timezone.utc),
-                details=create_event["details"]
+                details=create_event["details"],
             )
 
             logger.info("Event succusfully create",
@@ -238,7 +256,7 @@ def list_events():
                         })
     
             return better_jsonify(create_event, status=201)
-            
+
         except Exception as e:
             logger.exception(
                 "Failed to create event",
